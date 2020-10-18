@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1200</width>
+    <width>1500</width>
     <height>700</height>
    </rect>
   </property>
@@ -21,14 +21,16 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-image: url(:/stage/resources/stage/poker_bg2.jpg) 0 0 0 0 stretch stretch;</string>
+   <string notr="true">background-image: url(:/stage/resources/stage/poker_bg2.jpg);
+
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QLabel" name="pokerTable">
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>70</y>
+      <y>40</y>
       <width>1061</width>
       <height>501</height>
      </rect>
@@ -56,7 +58,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>40</y>
+      <y>10</y>
       <width>81</width>
       <height>81</height>
      </rect>
@@ -78,7 +80,7 @@
     <property name="geometry">
      <rect>
       <x>1049</x>
-      <y>40</y>
+      <y>10</y>
       <width>81</width>
       <height>81</height>
      </rect>
@@ -100,7 +102,7 @@
     <property name="geometry">
      <rect>
       <x>70</x>
-      <y>541</y>
+      <y>511</y>
       <width>81</width>
       <height>81</height>
      </rect>
@@ -122,7 +124,7 @@
     <property name="geometry">
      <rect>
       <x>1049</x>
-      <y>541</y>
+      <y>511</y>
       <width>81</width>
       <height>81</height>
      </rect>
@@ -144,7 +146,7 @@
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>40</y>
+      <y>10</y>
       <width>111</width>
       <height>51</height>
      </rect>
@@ -152,11 +154,13 @@
     <property name="styleSheet">
      <string notr="true">color:white;
 font-family:century gothic;
-font-size:14px;</string>
+font-size:14px;
+background: rgba(0, 0, 0, 0.4);
+background: rgba(205, 219, 0, 0.6);</string>
     </property>
     <property name="text">
      <string>Max. 13 Car
-12323$</string>
+9999$</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -166,7 +170,7 @@ font-size:14px;</string>
     <property name="geometry">
      <rect>
       <x>929</x>
-      <y>40</y>
+      <y>10</y>
       <width>111</width>
       <height>51</height>
      </rect>
@@ -174,11 +178,13 @@ font-size:14px;</string>
     <property name="styleSheet">
      <string notr="true">color:white;
 font-family:century gothic;
-font-size:14px;</string>
+font-size:14px;
+background: rgba(0, 0, 0, 0.4);
+border: 3px solid #fff;</string>
     </property>
     <property name="text">
      <string>Max. 13 Car
-12323$</string>
+1055$</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -188,7 +194,7 @@ font-size:14px;</string>
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>552</y>
+      <y>522</y>
       <width>111</width>
       <height>51</height>
      </rect>
@@ -196,21 +202,23 @@ font-size:14px;</string>
     <property name="styleSheet">
      <string notr="true">color:white;
 font-family:century gothic;
-font-size:14px;</string>
+font-size:14px;
+background: rgba(0, 0, 0, 0.4);
+</string>
     </property>
     <property name="text">
      <string>Max. 13 Car
-12323$</string>
+300$</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
     </property>
    </widget>
-   <widget class="QLabel" name="playerProfile3_2">
+   <widget class="QLabel" name="playerProfile4">
     <property name="geometry">
      <rect>
       <x>929</x>
-      <y>552</y>
+      <y>522</y>
       <width>111</width>
       <height>51</height>
      </rect>
@@ -218,11 +226,13 @@ font-size:14px;</string>
     <property name="styleSheet">
      <string notr="true">color:white;
 font-family:century gothic;
-font-size:14px;</string>
+font-size:14px;
+background: rgba(0, 0, 0, 0.4);
+</string>
     </property>
     <property name="text">
      <string>Max. 13 Car
-12323$</string>
+25$</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignCenter</set>
@@ -232,7 +242,7 @@ font-size:14px;</string>
     <property name="geometry">
      <rect>
       <x>230</x>
-      <y>140</y>
+      <y>110</y>
       <width>41</width>
       <height>51</height>
      </rect>
@@ -255,7 +265,7 @@ font-size:14px;</string>
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>160</y>
+      <y>130</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -270,14 +280,14 @@ background: transparent;</string>
      <number>-1</number>
     </property>
     <property name="text">
-     <string>$106558</string>
+     <string>$1065</string>
     </property>
    </widget>
    <widget class="QLabel" name="betP3">
     <property name="geometry">
      <rect>
       <x>280</x>
-      <y>465</y>
+      <y>435</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -292,14 +302,14 @@ background: transparent;</string>
      <number>-1</number>
     </property>
     <property name="text">
-     <string>$106558</string>
+     <string>$9999</string>
     </property>
    </widget>
    <widget class="QLabel" name="chipsIconP3">
     <property name="geometry">
      <rect>
       <x>230</x>
-      <y>446</y>
+      <y>416</y>
       <width>41</width>
       <height>51</height>
      </rect>
@@ -322,7 +332,7 @@ background: transparent;</string>
     <property name="geometry">
      <rect>
       <x>840</x>
-      <y>160</y>
+      <y>130</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -337,7 +347,7 @@ background: transparent;</string>
      <number>-1</number>
     </property>
     <property name="text">
-     <string>$106558</string>
+     <string>$4000</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -347,7 +357,7 @@ background: transparent;</string>
     <property name="geometry">
      <rect>
       <x>920</x>
-      <y>140</y>
+      <y>110</y>
       <width>41</width>
       <height>51</height>
      </rect>
@@ -370,7 +380,7 @@ background: transparent;</string>
     <property name="geometry">
      <rect>
       <x>840</x>
-      <y>465</y>
+      <y>435</y>
       <width>71</width>
       <height>16</height>
      </rect>
@@ -385,7 +395,7 @@ background: transparent;</string>
      <number>-1</number>
     </property>
     <property name="text">
-     <string>$106558</string>
+     <string>$5052</string>
     </property>
     <property name="alignment">
      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -395,7 +405,7 @@ background: transparent;</string>
     <property name="geometry">
      <rect>
       <x>920</x>
-      <y>446</y>
+      <y>416</y>
       <width>41</width>
       <height>51</height>
      </rect>
@@ -414,13 +424,399 @@ background: transparent;</string>
      <bool>true</bool>
     </property>
    </widget>
+   <widget class="QLabel" name="comCard1">
+    <property name="geometry">
+     <rect>
+      <x>305</x>
+      <y>240</y>
+      <width>101</width>
+      <height>131</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="resources.qrc">:/cards/resources/cards/red_back.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="comCard2">
+    <property name="geometry">
+     <rect>
+      <x>425</x>
+      <y>240</y>
+      <width>101</width>
+      <height>131</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="resources.qrc">:/cards/resources/cards/red_back.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="comCard3">
+    <property name="geometry">
+     <rect>
+      <x>545</x>
+      <y>240</y>
+      <width>101</width>
+      <height>131</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="resources.qrc">:/cards/resources/cards/red_back.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="comCard4">
+    <property name="geometry">
+     <rect>
+      <x>665</x>
+      <y>240</y>
+      <width>101</width>
+      <height>131</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="resources.qrc">:/cards/resources/cards/red_back.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="comCard5">
+    <property name="geometry">
+     <rect>
+      <x>785</x>
+      <y>240</y>
+      <width>101</width>
+      <height>131</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="resources.qrc">:/cards/resources/cards/red_back.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="holeCard1">
+    <property name="geometry">
+     <rect>
+      <x>475</x>
+      <y>440</y>
+      <width>101</width>
+      <height>131</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="resources.qrc">:/cards/resources/cards/gray_back.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="holeCard2">
+    <property name="geometry">
+     <rect>
+      <x>595</x>
+      <y>440</y>
+      <width>101</width>
+      <height>131</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="resources.qrc">:/cards/resources/cards/gray_back.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="totalPot">
+    <property name="geometry">
+     <rect>
+      <x>550</x>
+      <y>180</y>
+      <width>171</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color: white;
+font-family: century gothic;
+font-size:16px;
+background: transparent;</string>
+    </property>
+    <property name="text">
+     <string>Total Pot: $100</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="potIcon">
+    <property name="geometry">
+     <rect>
+      <x>490</x>
+      <y>160</y>
+      <width>51</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;
+</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="pixmap">
+     <pixmap resource="resources.qrc">:/stage/resources/stage/pot.png</pixmap>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="foldBtn">
+    <property name="geometry">
+     <rect>
+      <x>350</x>
+      <y>600</y>
+      <width>161</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	background: rgba(22, 140, 54, 0.7);
+	color: white;
+	font-size: 26px;
+	border-radius: 15px;
+	font-family: century gothic;
+}
+
+QPushButton:hover{
+	background: rgba(22, 140, 54, 0.9);
+}
+
+
+QPushButton:hover{
+	background: rgba(148, 148, 148, 0.9);
+}
+
+
+</string>
+    </property>
+    <property name="text">
+     <string>Fold</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="checkBtn">
+    <property name="geometry">
+     <rect>
+      <x>540</x>
+      <y>600</y>
+      <width>161</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	background: rgba(22, 140, 54, 0.7);
+	color: white;
+	font-size: 26px;
+	border-radius: 15px;
+	font-family: century gothic;
+}
+
+QPushButton:hover{
+	background: rgba(22, 140, 54, 0.9);
+}</string>
+    </property>
+    <property name="text">
+     <string>Check</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="raiseBtn">
+    <property name="geometry">
+     <rect>
+      <x>730</x>
+      <y>600</y>
+      <width>161</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	background: rgba(22, 140, 54, 0.7);
+	color: white;
+	font-size: 26px;
+	border-radius: 15px;
+	font-family: century gothic;
+}
+
+QPushButton:hover{
+	background: rgba(22, 140, 54, 0.9);
+}</string>
+    </property>
+    <property name="text">
+     <string>Raise</string>
+    </property>
+   </widget>
+   <widget class="QSpinBox" name="betSpinBox">
+    <property name="geometry">
+     <rect>
+      <x>730</x>
+      <y>560</y>
+      <width>71</width>
+      <height>22</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font-size: 18px;
+font-family: century gothic;</string>
+    </property>
+    <property name="wrapping">
+     <bool>false</bool>
+    </property>
+    <property name="maximum">
+     <number>5000</number>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="allinBtn">
+    <property name="geometry">
+     <rect>
+      <x>810</x>
+      <y>555</y>
+      <width>81</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	background: rgba(22, 140, 54, 0.7);
+	color: white;
+	font-size: 16px;
+	border-radius: 15px;
+	font-family: century gothic;
+}
+
+QPushButton:hover{
+	background: rgba(22, 140, 54, 0.9);
+}</string>
+    </property>
+    <property name="text">
+     <string>All-in</string>
+    </property>
+   </widget>
+   <widget class="QPlainTextEdit" name="plainTextEdit">
+    <property name="geometry">
+     <rect>
+      <x>1190</x>
+      <y>20</y>
+      <width>291</width>
+      <height>471</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: rgba(0,0,0,0.7);
+border: none;
+color:white;
+font-family:century gothic;
+font-size:14px;</string>
+    </property>
+    <property name="lineWrapMode">
+     <enum>QPlainTextEdit::WidgetWidth</enum>
+    </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
+    <property name="plainText">
+     <string>Alan: dfadsfsdfadsfasdfsadfasadfsdafsdfdsfsdfsdfsadfsdaffasdfdasfsdadsf
+Juan: asd</string>
+    </property>
+    <property name="overwriteMode">
+     <bool>false</bool>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="lineEdit">
+    <property name="geometry">
+     <rect>
+      <x>1190</x>
+      <y>531</y>
+      <width>291</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: rgba(0,0,0,0.2);
+border: none;
+color:white;
+font-family:century gothic;
+font-size:14px;
+border-bottom: 1px solid #fff;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="sendMsgBtn">
+    <property name="geometry">
+     <rect>
+      <x>1250</x>
+      <y>580</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	background: rgba(205, 219, 0, 0.7);
+	color: white;
+	font-size: 20px;
+	border-radius: 15px;
+	font-family: century gothic;
+}
+
+QPushButton:hover{
+	background: rgba(205, 219, 0, 0.9);
+}
+
+</string>
+    </property>
+    <property name="text">
+     <string>Send</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1200</width>
+     <width>1500</width>
      <height>26</height>
     </rect>
    </property>

@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Lobby</class>
+ <widget class="QDialog" name="Lobby">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>370</width>
+    <height>499</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Online Poker</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/stage/resources/stage/icon.png</normaloff>:/stage/resources/stage/icon.png</iconset>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">
+
+background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0.144279 rgba(168, 20, 20, 255), stop:0.502488 rgba(164, 43, 65, 255), stop:0.853993 rgba(96, 22, 22, 255));</string>
+  </property>
+  <widget class="QGroupBox" name="groupBox">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>20</y>
+     <width>331</width>
+     <height>461</height>
+    </rect>
+   </property>
+   <property name="styleSheet">
+    <string notr="true">background: rgba(0,0,0,0.6);</string>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <widget class="QLineEdit" name="nicknameLinedit">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>310</y>
+      <width>251</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;
+border: none;
+border-bottom: 1px solid #fff;
+font-family: century gothic;
+font-size: 20px;
+color: white;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="maxLength">
+     <number>13</number>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="nicknameLbl">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>285</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:white;
+background: transparent;
+font-family: century gothic;</string>
+    </property>
+    <property name="text">
+     <string>Nickname</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="joinBtn">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>380</y>
+      <width>161</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">QPushButton{
+	background: rgba(205, 219, 0, 0.7);
+	color: white;
+	font-size: 20px;
+	border-radius: 15px;
+	font-family: century gothic;
+}
+
+QPushButton:hover{
+	background: rgba(205, 219, 0, 0.9);
+}
+
+</string>
+    </property>
+    <property name="text">
+     <string>Join table</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="titleLabel">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>40</y>
+      <width>291</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;
+font-family: century gothic;
+font-size: 45px;
+color: white;</string>
+    </property>
+    <property name="text">
+     <string>Online poker</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="loadingAnimation">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>100</y>
+      <width>161</width>
+      <height>161</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+    <property name="wordWrap">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="loadinLabel">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>250</y>
+      <width>131</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:white;
+background: transparent;
+font-family: century gothic;</string>
+    </property>
+    <property name="text">
+     <string>Waiting for players...</string>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

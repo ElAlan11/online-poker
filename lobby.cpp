@@ -7,7 +7,8 @@ Lobby::Lobby(QWidget *parent) :
     ui(new Ui::Lobby)
 {
     ui->setupUi(this);
-    ui->loadingAnimation->hide();
+    this->setFixedSize(370, 500);
+    ui->loadingAnimation->show();
     ui->loadinLabel->hide();
 }
 
@@ -21,8 +22,8 @@ void Lobby::on_joinBtn_clicked()
     QMovie *movie = new QMovie(":/stage/resources/stage/waitAnimation.gif");
     movie->setSpeed(200);
     ui->loadingAnimation->setMovie(movie);
-
     movie->start();
+
     ui->loadingAnimation->show();
     ui->loadinLabel->show();
     ui->nicknameLbl->hide();

@@ -14,6 +14,7 @@ SOURCES += \
     mainserverapp.cpp \
     mainwindow.cpp \
     player.cpp \
+    playermin.cpp \
     pokergame.cpp
 
 HEADERS += \
@@ -21,6 +22,7 @@ HEADERS += \
     mainserverapp.h \
     mainwindow.h \
     player.h \
+    playermin.h \
     pokergame.h
 
 FORMS += \

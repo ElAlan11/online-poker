@@ -14,21 +14,6 @@ MainWindow::MainWindow(QWidget *parent)
 
     mainServerApp game;
 
-//    mainServerApp::valToNum['2'] = 2;
-//    mainServerApp::valToNum['3'] = 3;
-//    mainServerApp::valToNum['4'] = 4;
-//    mainServerApp::valToNum['5'] = 5;
-//    mainServerApp::valToNum['6'] = 6;
-//    mainServerApp::valToNum['7'] = 7;
-//    mainServerApp::valToNum['8'] = 8;
-//    mainServerApp::valToNum['9'] = 9;
-//    mainServerApp::valToNum['0'] = 10;
-//    mainServerApp::valToNum['J'] = 11;
-//    mainServerApp::valToNum['Q'] = 12;
-//    mainServerApp::valToNum['K'] = 13;
-//    mainServerApp::valToNum['A'] = 14;
-
-
     //QMessageBox::warning(this,"Title", "Content"); // It can be QMessageBox::information
 }
 

@@ -1,4 +1,6 @@
 #include "mainserverapp.h"
+#include "qstring.h"
+#include "qtextstream.h"
 
 mainServerApp::mainServerApp()
 {
@@ -11,18 +13,33 @@ mainServerApp::mainServerApp()
     players.push_back(p);
     contPlayers++;
 
+    // Considerar que pasa si se desconecta alguien en el lobby
+
+    // Hacer nuevo constructor con un file descriptor y nombre
+    // Asignar números una vez empezada la partida
     Player p2(contPlayers+1,"ete sech");
     players.push_back(p2);
     contPlayers++;
 
-    //Si hay dos jugadores y pasan 10 segundos se inicia la partida con los que esten si son mas de 1
+    Player p3(contPlayers+1,"el pepe");
+    players.push_back(p3);
+    contPlayers++;
+
+    Player p4(contPlayers+1,"bbcita bblin");
+    players.push_back(p4);
+    contPlayers++;
+
+    //Si hay dos jugadores y pasan 30 segundos se inicia la partida con los que esten si son mas de 1
+
+    for(unsigned int i=0; i<players.size(); i++)
+        players[i].playerNum = i+1;
 
     //Successives matches ends when there's only one player remaining
 
     newGame();
-//    while(contPlayers > 1){
-//        newGame();
-//    }
+    //while(contPlayers > 1 && newGame());
+
+    return;
 }
 
 mainServerApp::valToNumMap mainServerApp::valToNum = {
@@ -30,10 +47,14 @@ mainServerApp::valToNumMap mainServerApp::valToNum = {
 };
 
 bool mainServerApp::compareCards(const char* c1, const char* c2){
-    return valToNum[c1[1]] < valToNum[c2[1]];
+    return valToNum[c1[1]] < valToNum[c2[1]]; // Desc
 }
 
-void mainServerApp::newGame(){
+bool mainServerApp::compareBets(const Player p1, const Player p2){
+    return p1.bet < p2.bet; // Desc
+}
+
+bool mainServerApp::newGame(){
     suits.clear();
     values.clear();
     deck.clear();
@@ -49,8 +70,6 @@ void mainServerApp::newGame(){
     for(auto s:suits)
         deck[s] = values;
 
-    // Considerar que pasa si se desconecta alguien en el lobby
-
     //Set the community cards
     for(int i=0; i<5; i++){
         char* res = dealRandomCard(i);
@@ -58,11 +77,7 @@ void mainServerApp::newGame(){
         commCards[i][1] = res[1];
     }
 
-    //    for(int i=0; i<5; i++)
-    //        cout << endl << commCards[i][0] << commCards[i][1];
-
     //Deal players cards
-
     for(unsigned int i=0; i<players.size(); i++){
         char* res[2];
         res[0] = dealRandomCard(0+i*i);
@@ -70,35 +85,202 @@ void mainServerApp::newGame(){
         players[i].setCards(res);
     }
 
-    for(auto p: players){
-        short int prueba = whichHand(p);
+    //Initial bet
+    for(int i=0; i<contPlayers; i++){
+        if(players[i].stack < INITIAL_BET){
+            players.erase(players.begin()+i);
+            i--;
+            contPlayers--;
+            // -Jugador desconectado- PACKAGE to ALL PLAYERS
+            // -Partida termina- PACKAGE to ALL PLAYERS
+
+            if(contPlayers < 2)
+                return false;
+        }
+        else{
+            players[i].isAllin = false;
+            players[i].isOut = false;
+            players[i].secPot = 0;
+
+            players[i].bet = INITIAL_BET;
+            players[i].stack -= INITIAL_BET;
+            // - Cartas personales - PACKAGE
+            //Notify the changes --> -Estado global- PACKAGE
+        }
     }
 
-//    //Initial bet
-//    for(auto it = players.begin(); it!=players.end(); it++){
-//        if(it->bet < INITIAL_BET){
-//            players.erase(it);
-//            //Notify the other players
-//        }
-//        else{
-//            it->bet = 5;
-//            it->stack -= 5;
-//            //Notify the changes
-//        }
-//    }
+    // PRE FLOP
+    if(!betsRound())
+        return false;
 
-//    // PRE FLOP
+    // THE FLOP
+    // -Cartas comunitarias- PACKAGE to ALL PLAYERS
+    if(!betsRound())
+        return false;
 
+    // THE TURN
+    // -Abrir carta- PACKAGE to ALL PLAYERS
+    if(!betsRound())
+        return false;
 
-//    // THE FLOP
+    // THE RIVER
+    // -Abrir carta- PACKAGE to ALL PLAYERS
+    if(!betsRound())
+        return false;
 
-//    // THE TURN
+    int greatest=0, indGreatest=0;
 
-//    // THE RIVER
+    for(auto it = players.begin(); it != players.end(); it++)
+        whichHand(*it);
 
-//    for(auto p: players){
-//        whichHand(p);
-//    }
+    for(unsigned int i=0; i<players.size(); i++){
+        if(players[i].isOut)
+            continue;
+
+        if(players[i].hand[0] > greatest){
+            greatest = players[i].hand[0];
+            indGreatest = i;
+        }
+        else if(players[i].hand[0] == greatest){ // Same hand
+            if(players[i].hand[1] > players[indGreatest].hand[1]){
+                greatest = players[i].hand[0];
+                indGreatest = i;
+            }
+            else if(players[i].hand[1] == players[indGreatest].hand[1]){ // Same hand value (i.e. 2 pairs of 2)
+                if(players[i].higherCardVal() > players[indGreatest].higherCardVal()){ // Higher card wins
+                    greatest = players[i].hand[0];
+                    indGreatest = i;
+                }
+                else if(players[i].higherCardVal() == players[indGreatest].higherCardVal()){
+                    if(players[i].lowerCardVal() > players[indGreatest].lowerCardVal()){ // Higher card wins
+                        greatest = players[i].hand[0];
+                        indGreatest = i;
+                    }
+                }
+                else{
+                    //Empate
+                }
+            }
+        }
+    }
+
+    // -Showdown- PACKAGE to ALL
+    while(true);
+    return true;
+}
+
+bool mainServerApp::betsRound(){
+    int lastBet = 0;
+
+    if(players[0].bet == INITIAL_BET)
+        lastBet = INITIAL_BET;
+    else{
+//        for(auto it = players.begin(); it!=players.end(); it++)
+//            it->bet = 0;
+    }
+
+    int noRaisedCount = 0;
+
+    // Update status
+
+    while(noRaisedCount != contPlayers){
+        for(auto it = players.begin(); it!=players.end(); it++){
+
+            if(noRaisedCount == contPlayers)
+                break;
+
+            if(it->isAllin || it->isOut){
+                noRaisedCount++;
+                continue;
+            }
+            //  -Turno de- PACKAGE
+
+            // Wait for respective player response and verify the origin
+            // 0=Out, 1=Check/Call, 2=Raise, 3=All-in
+
+            // -------------- TEST BLOCK -----------------
+
+            int action = 0;
+            int ammount = 0;
+
+            if(ammount > it->stack){
+                // Mensaje me hackearon
+                // Mensaje partida terminada
+                return false;
+            }
+
+            // -------------------------------------------
+
+            switch(action){
+            case 0:
+                it->isOut = true;
+                noRaisedCount++;
+                break;
+            case 1:
+                it->bet += ammount;
+                it->stack -= ammount;
+                noRaisedCount++;
+                break;
+            case 2:
+                lastBet = it->bet + ammount;
+                it->bet += ammount;
+                it->stack -= ammount;
+                noRaisedCount = 0;
+                break;
+            case 3:
+                it->isAllin = true;
+                it->bet += ammount;
+                it->stack -= ammount;
+
+                if(it->bet < lastBet){
+                    subPots = true;
+                    noRaisedCount++;
+                }
+                else if (it->bet == lastBet){
+                    noRaisedCount++;
+                }
+                else{
+                    lastBet = it->bet;
+                    noRaisedCount = 0;
+                }
+                break;
+            }
+
+            // -Jugada turno- PACKAGE to ALL
+            //  -Estatus global- PACKAGE to ALL
+        }
+    }
+
+    if(subPots == true){
+        vector<Player> sortedPlayers = players;
+        std::sort(sortedPlayers.begin(), sortedPlayers.end(), compareBets);
+        int prevPot = 0;
+        int prevBet = 0;
+
+        for(int i=0; i<contPlayers; i++){
+            unsigned int j=0;
+            for(j=0; j<players.size(); j++) // Finds the original vector index
+                if(players[j].playerNum == sortedPlayers[i].playerNum)
+                    break;
+
+//            int increment = (sortedPlayers[i].bet - prevBet) * (contPlayers-i);
+//            players[j].secPot += pot + prevPot + increment;
+//            prevPot = increment;
+
+            players[j].secPot = prevPot + (sortedPlayers[i].bet - prevBet) * (contPlayers-i);
+            prevPot = players[j].secPot; // OJO AQUI para cuando es
+            prevBet = sortedPlayers[i].bet;
+        }
+        pot = 0; // Subsequent bet rounds will not sum again the general pot
+
+        //Notify the changes (Specific message for each player's pot)
+    }
+    else{
+        for(auto p: players)
+            pot += p.bet;
+        //Notify the changes (General message for all players com. plot)
+    }
+    return true;
 }
 
 char* mainServerApp::dealRandomCard(int s){
@@ -139,34 +321,43 @@ char* mainServerApp::dealRandomCard(int s){
     return randomCard;
 }
 
-short int mainServerApp::whichHand(Player p){
+void mainServerApp::whichHand(Player& p){
     map<char,int> suitsCount; // Counts the number of cards of each suit
     map<char,int> valuesCount; // Counts the number of cards of each value
 
     vector<char*> gameCards;
 
 
-    /*//TEST BLOCK
-    char* tc1 = new char[2]{'S','A'};
-    char* tc2 = new char[2]{'C','A'};
-    char* tc3 = new char[2]{'S','4'};
-    char* tc4 = new char[2]{'C','4'};
-    char* tc5 = new char[2]{'S','3'};
-    char* tc6 = new char[2]{'S','3'};
-    char* tc7 = new char[2]{'C','2'};
+//    //TEST BLOCK
+//    char* tc1 = new char[2]{'S','A'};
+//    char* tc2 = new char[2]{'C','A'};
+//    char* tc3 = new char[2]{'S','4'};
+//    char* tc4 = new char[2]{'C','4'};
+//    char* tc5 = new char[2]{'S','3'};
+//    char* tc6 = new char[2]{'S','3'};
+//    char* tc7 = new char[2]{'C','2'};
 
-    gameCards.push_back(tc1);
-    gameCards.push_back(tc2);
-    gameCards.push_back(tc3);
-    gameCards.push_back(tc4);
-    gameCards.push_back(tc5);
-    gameCards.push_back(tc6);
-    gameCards.push_back(tc7);*/
+//    gameCards.push_back(tc1);
+//    gameCards.push_back(tc2);
+//    gameCards.push_back(tc3);
+//    gameCards.push_back(tc4);
+//    gameCards.push_back(tc5);
+//    gameCards.push_back(tc6);
+//    gameCards.push_back(tc7);
 
-    for(int i=0;i<5; i++)
-        gameCards.push_back(commCards[i]);
-    for(int i=0;i<2; i++)
-        gameCards.push_back(p.holeCards[i]);
+    for(int i=0;i<5; i++){
+        char* temp = new char[2];
+        temp[0] = commCards[i][0];
+        temp[1] = commCards[i][1];
+        gameCards.push_back(temp);
+    }
+    for(int i=0;i<2; i++){
+        char* temp = new char[2];
+        temp[0] = p.holeCards[i][0];
+        temp[1] = p.holeCards[i][1];
+        gameCards.push_back(temp);
+    }
+
 
     //Sort the cards by their values
     std::sort(gameCards.begin(), gameCards.end(), compareCards);
@@ -341,7 +532,7 @@ short int mainServerApp::whichHand(Player p){
             p.hand[1] = valToNum[p.holeCards[1][1]];
     }
 
-    cout << "Hand: " << p.hand[0] << " Max: " << p.hand[1];
-
-    return 1;
+    cout << "Hand: " << p.hand[0] << " Max: " << p.hand[1] << endl;
+    return;
 }
+

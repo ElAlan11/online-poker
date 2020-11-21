@@ -15,12 +15,18 @@ public:
     Player(int num, string name);
     friend class mainServerApp;
     void setCards(char** cards);
+    int higherCardVal();
+    int lowerCardVal();
+    friend ostream& operator<<(ostream& os, const Player& p);
 
 private:
+    bool isAllin;
+    bool isOut;
     short int playerNum;
     string nickname;
     int stack;
     int bet;
+    int secPot;
     char holeCards[2][2];
     int hand[2];
     //hand[0] = Hand

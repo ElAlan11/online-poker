@@ -27,12 +27,13 @@ public:
     typedef map<char,int> valToNumMap;
     static valToNumMap valToNum;
     bool static compareCards(const char* card1, const char* card2);
+    bool static compareBets(const Player p1, const Player p2);
 
     mainServerApp();
-    void newGame();
+    bool newGame();
+    bool betsRound();
     char* dealRandomCard(int s);
-    short int whichHand(Player p);
-
+    void whichHand(Player& p);
 };
 
 #endif // MAINSERVERAPP_H

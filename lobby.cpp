@@ -40,8 +40,8 @@ void Lobby::on_joinBtn_clicked()
     if(res){
         close();
         m.show();
-        //while(gameLoop());
         m.gameLoop();
-        //m.close();
+//        while(m.gameLoop());
+//        m.close();
     }
 }

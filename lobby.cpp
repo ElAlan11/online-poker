@@ -19,6 +19,11 @@ Lobby::~Lobby()
 
 void Lobby::on_joinBtn_clicked()
 {
+    if(ui->nicknameLinedit->text().isEmpty()){
+        QMessageBox::warning(this,"Poker Online", "Please introduce your nickname to start playing.");
+        return;
+    }
+
     QMovie *movie = new QMovie(":/stage/resources/stage/waitAnimation.gif");
     movie->setSpeed(200);
     ui->loadingAnimation->setMovie(movie);
@@ -30,8 +35,13 @@ void Lobby::on_joinBtn_clicked()
     ui->nicknameLinedit->setEnabled(false);
     ui->joinBtn->setEnabled(false);
 
-    if(true){
+    int res = m.joinMatch(ui->nicknameLinedit->text().toStdString());
+
+    if(res){
         close();
         m.show();
+        //while(gameLoop());
+        m.gameLoop();
+        //m.close();
     }
 }

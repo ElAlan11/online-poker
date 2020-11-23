@@ -11,12 +11,14 @@ class PokerGame
 private:
     int turn;
     int pot;
-    vector<PlayerMin> players;
+    vector<PlayerMin> competitors;
+    PlayerMin me;
     char commCards[5][2] = {{'X'}};
 
     int ammount;
     int action;
     int lastBet;
+
 
     /* Cada que se reciba -Jugada turno-
      * Si jugada = 2 || 3
@@ -26,7 +28,8 @@ private:
      */
 
 public:
-    PokerGame();
+    PokerGame(string nickname);
+    bool gameLoop();
 };
 
 #endif // POKERGAME_H

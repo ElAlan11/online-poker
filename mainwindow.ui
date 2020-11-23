@@ -2,6 +2,9 @@
 <ui version="4.0">
  <class>MainWindow</class>
  <widget class="QMainWindow" name="MainWindow">
+  <property name="enabled">
+   <bool>true</bool>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -143,6 +146,9 @@
     </property>
    </widget>
    <widget class="QLabel" name="playerProfile1">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>160</x>
@@ -152,11 +158,24 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">color:white;
+     <string notr="true">QLabel{
+color:white;
 font-family:century gothic;
 font-size:14px;
 background: rgba(0, 0, 0, 0.4);
-background: rgba(205, 219, 0, 0.6);</string>
+}
+
+QLabel[myPlayer = true]{
+	background: rgba(205, 219, 0, 0.6);
+}
+
+QLabel:disabled{
+	border:none;
+}
+
+QLabel:enabled{
+	border: 3px solid #fff;
+}</string>
     </property>
     <property name="text">
      <string>Max. 13 Car
@@ -167,6 +186,9 @@ background: rgba(205, 219, 0, 0.6);</string>
     </property>
    </widget>
    <widget class="QLabel" name="playerProfile2">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>929</x>
@@ -176,11 +198,24 @@ background: rgba(205, 219, 0, 0.6);</string>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">color:white;
+     <string notr="true">QLabel{
+color:white;
 font-family:century gothic;
 font-size:14px;
 background: rgba(0, 0, 0, 0.4);
-border: 3px solid #fff;</string>
+}
+
+QLabel[myPlayer = true]{
+	background: rgba(205, 219, 0, 0.6);
+}
+
+QLabel:disabled{
+	border:none;
+}
+
+QLabel:enabled{
+	border: 3px solid #fff;
+}</string>
     </property>
     <property name="text">
      <string>Max. 13 Car
@@ -191,6 +226,9 @@ border: 3px solid #fff;</string>
     </property>
    </widget>
    <widget class="QLabel" name="playerProfile3">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>160</x>
@@ -200,11 +238,24 @@ border: 3px solid #fff;</string>
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">color:white;
+     <string notr="true">QLabel{
+color:white;
 font-family:century gothic;
 font-size:14px;
 background: rgba(0, 0, 0, 0.4);
-</string>
+}
+
+QLabel[myPlayer = true]{
+	background: rgba(205, 219, 0, 0.6);
+}
+
+QLabel:disabled{
+	border:none;
+}
+
+QLabel:enabled{
+	border: 3px solid #fff;
+}</string>
     </property>
     <property name="text">
      <string>Max. 13 Car
@@ -215,6 +266,9 @@ background: rgba(0, 0, 0, 0.4);
     </property>
    </widget>
    <widget class="QLabel" name="playerProfile4">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>929</x>
@@ -224,11 +278,24 @@ background: rgba(0, 0, 0, 0.4);
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">color:white;
+     <string notr="true">QLabel{
+color:white;
 font-family:century gothic;
 font-size:14px;
 background: rgba(0, 0, 0, 0.4);
-</string>
+}
+
+QLabel[myPlayer = true]{
+	background: rgba(205, 219, 0, 0.6);
+}
+
+QLabel:disabled{
+	border:none;
+}
+
+QLabel:enabled{
+	border: 3px solid #fff;
+}</string>
     </property>
     <property name="text">
      <string>Max. 13 Car
@@ -621,8 +688,7 @@ QPushButton:hover{
 	background: rgba(22, 140, 54, 0.9);
 }
 
-
-QPushButton:hover{
+QPushButton:disabled{
 	background: rgba(148, 148, 148, 0.9);
 }
 
@@ -642,21 +708,32 @@ QPushButton:hover{
       <height>51</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <family>century gothic</family>
+      <pointsize>-1</pointsize>
+     </font>
+    </property>
     <property name="styleSheet">
      <string notr="true">QPushButton{
 	background: rgba(22, 140, 54, 0.7);
 	color: white;
-	font-size: 26px;
+	font-size: 22px;
 	border-radius: 15px;
 	font-family: century gothic;
 }
 
 QPushButton:hover{
 	background: rgba(22, 140, 54, 0.9);
-}</string>
+}
+
+QPushButton:disabled{
+	background: rgba(148, 148, 148, 0.9);
+}
+</string>
     </property>
     <property name="text">
-     <string>Check</string>
+     <string>All-in (1000$)</string>
     </property>
    </widget>
    <widget class="QPushButton" name="raiseBtn">
@@ -679,7 +756,12 @@ QPushButton:hover{
 
 QPushButton:hover{
 	background: rgba(22, 140, 54, 0.9);
-}</string>
+}
+
+QPushButton:disabled{
+	background: rgba(148, 148, 148, 0.9);
+}
+</string>
     </property>
     <property name="text">
      <string>Raise</string>
@@ -725,13 +807,18 @@ font-family: century gothic;</string>
 
 QPushButton:hover{
 	background: rgba(22, 140, 54, 0.9);
-}</string>
+}
+
+QPushButton:disabled{
+	background: rgba(148, 148, 148, 0.9);
+}
+</string>
     </property>
     <property name="text">
      <string>All-in</string>
     </property>
    </widget>
-   <widget class="QPlainTextEdit" name="plainTextEdit">
+   <widget class="QPlainTextEdit" name="chatBox">
     <property name="geometry">
      <rect>
       <x>1190</x>
@@ -761,7 +848,7 @@ Juan: asd</string>
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QLineEdit" name="lineEdit">
+   <widget class="QLineEdit" name="chatLineEdit">
     <property name="geometry">
      <rect>
       <x>1190</x>

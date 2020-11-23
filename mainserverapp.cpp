@@ -91,12 +91,12 @@ bool mainServerApp::newGame(){
             players.erase(players.begin()+i);
             i--;
             contPlayers--;
-            // -Jugador desconectado- PACKAGE to ALL PLAYERS
-            // -Partida termina- PACKAGE to ALL PLAYERS
+            // -Jugador sin dinero- PACKAGE to ALL PLAYERS
 
             if(contPlayers < 2)
                 return false;
-        }
+        }       // -Partida termina- PACKAGE to ALL PLAYERS
+
         else{
             players[i].isAllin = false;
             players[i].isOut = false;
@@ -105,9 +105,9 @@ bool mainServerApp::newGame(){
             players[i].bet = INITIAL_BET;
             players[i].stack -= INITIAL_BET;
             // - Cartas personales - PACKAGE
-            //Notify the changes --> -Estado global- PACKAGE
         }
     }
+    //Notify the changes --> -Estado global- PACKAGE
 
     // PRE FLOP
     if(!betsRound())
@@ -277,7 +277,7 @@ bool mainServerApp::betsRound(){
     }
     else{
         for(auto p: players)
-            pot += p.bet;
+            pot = p.bet;
         //Notify the changes (General message for all players com. plot)
     }
     return true;

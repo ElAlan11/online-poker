@@ -20,8 +20,7 @@ Player::Player(int number, string name)
     nickname = name;
     isAllin = false;
     isOut = false;
-//    stack = 9999;
-    stack = 100;
+    stack = 1000;
     secPot = 0;
 }
 

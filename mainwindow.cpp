@@ -1,24 +1,430 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "player.h"
-#include "pokergame.h"
-#include "mainserverapp.h"
-#include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+    initializeUI();
+}
+
+void MainWindow::initializeUI(){
     ui->setupUi(this);
     this->setFixedSize(1500,700);
 
-    mainServerApp game;
+    playersInfo[0] = ui->playerProfile1;
+    playersInfo[1] = ui->playerProfile2;
+    playersInfo[2] = ui->playerProfile3;
+    playersInfo[3] = ui->playerProfile4;
 
-    //QMessageBox::warning(this,"Title", "Content"); // It can be QMessageBox::information
+    playersIcons[0] = ui->playerIcon1;
+    playersIcons[1] = ui->playerIcon2;
+    playersIcons[2] = ui->playerIcon3;
+    playersIcons[3] = ui->playerIcon4;
+
+    playersCards[0][0] = ui->playerCard1_1;
+    playersCards[0][1] = ui->playerCard1_2;
+    playersCards[1][0] = ui->playerCard2_1;
+    playersCards[1][1] = ui->playerCard2_2;
+    playersCards[2][0] = ui->playerCard3_1;
+    playersCards[2][1] = ui->playerCard3_2;
+    playersCards[3][0] = ui->playerCard4_1;
+    playersCards[3][1] = ui->playerCard4_2;
+
+    bets[0] = ui->betP1;
+    bets[1] = ui->betP2;
+    bets[2] = ui->betP3;
+    bets[3] = ui->betP4;
+
+    commCardIcons[0] = ui->comCard1;
+    commCardIcons[1] = ui->comCard2;
+    commCardIcons[2] = ui->comCard3;
+    commCardIcons[3] = ui->comCard4;
+    commCardIcons[4] = ui->comCard5;
+
+    chipsIcons[0] = ui->chipsIconP1;
+    chipsIcons[1] = ui->chipsIconP2;
+    chipsIcons[2] = ui->chipsIconP3;
+    chipsIcons[3] = ui->chipsIconP4;
+}
+
+bool MainWindow::joinMatch(string nickname){
+    myNum = 1;
+    int pkgCode = 0;
+
+    // Request to join
+    // -Buscar partida- PACKAGE
+    // Wait for a -Partida encontrada- PACKAGE
+
+    if(pkgCode==0){ // !!!!!!!!!!!!!!! CHANGE FOR THE REAL PACKAGE CODE
+        // Read the package and add the others players
+
+        players[myNum-1] = PlayerMin(myNum,nickname);
+        players[1] = PlayerMin(2, "ete sech");
+        players[2] = PlayerMin(3, "el pepe");
+        players[3] = PlayerMin(4, "bbcita bblin");
+
+        for(int i=0; i<4; i++)
+            playersInfo[i]->setText(QString::fromStdString(players[i].nickname+"\n"+to_string(players[i].stack)+"$"));
+
+        ui->chatBox->setPlainText("");
+        ui->chatLineEdit->setText("");
+
+        playersInfo[myNum-1]->setProperty("myPlayer", true);
+        playersInfo[myNum-1]->style()->unpolish(playersInfo[myNum-1]);
+        playersInfo[myNum-1]->style()->polish(playersInfo[myNum-1]);
+        playersInfo[myNum-1]->update();
+    }
+
+    return true;
+}
+
+bool MainWindow::gameLoop(){
+
+    // ---------- INITIALIZATION BLOCK ----------
+    QPixmap grayCard(":/cards/resources/cards/gray_back.png");
+    QPixmap redCard(":/cards/resources/cards/red_back.png");
+    pot = 0;
+    lastBet = 0;
+    int pkgCode = 0;
+    string buffer = "";
+
+    for(int i=0; i<4; i++){
+        players[i].isOut = false;
+        players[i].bet = 0;
+        bets[i]->setText(QString::fromStdString(to_string(players[i].bet)+"$"));
+        playersCards[i][0]->setPixmap(grayCard);
+        playersCards[i][1]->setPixmap(grayCard);
+        players[i].hand[0] = 0;
+        players[i].hand[0] = 0;
+        playersInfo[i]->setEnabled(false);
+
+        QPixmap pIcon(":/stage/resources/stage/player"+QString::number(i+1)+".png");
+        playersIcons[i]->setPixmap(pIcon);
+    }
+
+    for(int i=0; i<5; i++)
+        commCardIcons[i]->setPixmap(redCard);
+
+    ui->totalPot->setText(QString::number(pot)+"$");
+
+    ui->holeCard1->setPixmap(grayCard);
+    ui->holeCard2->setPixmap(grayCard);
+
+    defaultButtons();
+    // --------------------------------------------
+
+    //Wait for a -Jugador sin dinero- or -Cartas personales package-
+
+    if(pkgCode == 0){
+        players[myNum-1].holeCards[0][0] = 'C';
+        players[myNum-1].holeCards[0][1] = '0';
+        players[myNum-1].holeCards[1][0] = 'D';
+        players[myNum-1].holeCards[1][1] = 'J';
+
+        string cardStr = "";
+        cardStr += players[myNum-1].holeCards[0][1] + players[myNum-1].holeCards[0][0];
+        QPixmap cardImg1(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+        cardStr += players[myNum-1].holeCards[1][1] + players[myNum-1].holeCards[1][0];
+        QPixmap cardImg2(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+
+        ui->holeCard1->setPixmap(cardImg1);
+        ui->holeCard2->setPixmap(cardImg2);
+    }
+    else if(pkgCode == 1){ // Player out
+        int playerOut = 0;
+
+        if(pkgCode == 2) // Partida terminada
+        {
+            QMessageBox::critical(this,"Game over", "All the other players left the game.");
+            this->close();
+            return false;
+        }
+
+        if(playerOut == myNum){
+            QMessageBox::critical(this,"Game over", "You ran out of money.");
+            this->close();
+            return false;
+        }
+        else{
+            players[playerOut-1].inTheMatch = false;
+
+            playersIcons[playerOut-1]->setVisible(false);
+            playersInfo[playerOut-1]->setVisible(false);
+            playersCards[playerOut-1][0]->setVisible(false);
+            playersCards[playerOut-1][1]->setVisible(false);
+            bets[playerOut-1]->setVisible(false);
+            chipsIcons[playerOut-1]->setVisible(false);
+        }
+    }
+
+    // Waits for a -Estado global- PKG
+    if(pkgCode == 3){ // Estado global
+        buffer = "";
+        updateGameState(buffer);
+    }
+
+    // PRE FLOP
+    if(!betRound())
+        return false;
+
+    // THE FLOP
+    // Wait for -Cartas comunitarias- PACKAGE
+
+    for(int i=0; i<3; i++){
+        commCards[i][0] = 'S';
+        commCards[i][1] = '3';
+
+        string cardStr = "";
+        cardStr += commCards[i][1] + commCards[i][0];
+        QPixmap cardImg(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+        commCardIcons[i][0].setPixmap(cardImg);
+    }
+
+    if(!betRound())
+        return false;
+
+    // THE TURN
+    // Wait for -Abrir carta- PACKAGE
+    commCards[3][0] = 'C';
+    commCards[3][1] = 'A';
+
+    string cardStr = "";
+    cardStr += commCards[3][1] + commCards[3][0];
+    QPixmap cardImg(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+    commCardIcons[3][0].setPixmap(cardImg);
+
+    if(!betRound())
+        return false;
+
+    // THE RIVER
+    // Wait for -Abrir carta- PACKAGE
+    commCards[4][0] = 'S';
+    commCards[4][1] = '3';
+
+    string cardStr2 = "";
+    cardStr += commCards[4][1] + commCards[4][0];
+    QPixmap cardImg2(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+    commCardIcons[4][0].setPixmap(cardImg);
+
+    if(!betRound())
+        return false;
+
+    // Wait for -Showdown- PACKAGE
+    showdown(buffer);
+
+    return true;
+}
+
+bool MainWindow::betRound(){
+
+    // Repeat everything while  pkg != -Cartas comunitarias- -Abrir carta- -Showdown-
+    // Wait for -Turno de- PKG
+
+    turn = 1;
+    string buffer;
+    int pkgCode = 0;
+
+    if(turn == myNum){
+        playTurn();
+    }
+
+    // Wait and read -Jugada turno- PACKAGE
+
+    int action = 2;
+    ammount = 20;
+    QPixmap skull(":/stage/resources/stage/skull.png");
+
+    switch (action) {
+    case 0: // Out
+        players[turn-1].isOut = true;
+        playersIcons[turn-1]->setPixmap(skull);
+        break;
+    case 2: // Raise
+    case 3: // All-in
+        if (ammount > lastBet)
+            lastBet = ammount;
+        break;
+    }
+
+    // Wait for -Estatus global- PACKAGE
+    updateGameState(buffer);
+
+    if(pkgCode == 3){
+        QMessageBox::critical(this,"Game over", "Detected hacker suspicious behavior");
+        return false;
+        this->close();
+    }
+
+    return true;
+}
+
+void MainWindow::playTurn()
+{
+    playersInfo[myNum-1]->setEnabled(true);
+    ui->checkBtn->setEnabled(true);
+    ui->foldBtn->setEnabled(true);
+
+    int toCall = lastBet - players[myNum-1].bet;
+
+    if(toCall == 0){ // No raises done for other players
+        ui->checkBtn->setEnabled(true);
+        ui->checkBtn->setText("Check");
+        ammount = 0;
+
+        if(players[myNum-1].stack > 0){ // Enough money to raise
+            ui->allinBtn->setEnabled(true);
+            ui->raiseBtn->setEnabled(true);
+            ui->betSpinBox->setEnabled(true);
+            ui->betSpinBox->setMaximum(players[myNum-1].stack);
+            ui->betSpinBox->setMinimum(1);
+        }
+    }
+    else{ // Bet raised for other player
+        if(toCall < players[myNum-1].stack){ // Enough money to raise
+            ui->checkBtn->setText("Call "+QString::number(toCall)+"$");
+
+            ui->allinBtn->setEnabled(true);
+            ui->raiseBtn->setEnabled(true);
+            ui->betSpinBox->setEnabled(true);
+            ui->betSpinBox->setMaximum(players[myNum-1].stack);
+            ui->betSpinBox->setMinimum(1);
+
+            ammount = toCall;
+        }
+        else{ // Not enough money: All-in or out
+            ui->checkBtn->setText("All-in ("+QString::number(players[myNum-1].stack)+"$)");
+
+            ammount = players[myNum-1].stack;
+        }
+    }
+}
+
+void MainWindow::defaultButtons(){
+    playersInfo[myNum-1]->setEnabled(false);
+    ui->foldBtn->setEnabled(false);
+    ui->allinBtn->setEnabled(false);
+    ui->checkBtn->setEnabled(false);
+    ui->checkBtn->setText("Check/Call");
+    ui->raiseBtn->setEnabled(false);
+    ui->betSpinBox->setEnabled(false);
+    ui->betSpinBox->setValue(1);
+}
+
+void MainWindow::updateGameState(string buffer){
+// Bote, ApuestaJ1, ApuestaJ2, ApuestaJ3, ApuestaJ4, DineroJ1, DineroJ2, DineroJ3, DineroJ4.
+    pot = 100;
+    ui->totalPot->setText(QString::number(pot)+"$");
+
+    for(int i=0; i<4; i++){
+        players[i].bet = 200;
+        bets[i]->setText(QString::number(players[i].bet));
+    }
+    for(int i=0; i<4; i++){
+        players[i].stack = 400;
+        playersInfo[i]->setText(QString::fromStdString(players[i].nickname+"\n"+to_string(players[i].stack)+"$"));
+    }
+}
+
+void MainWindow::showdown(string buffer){
+//(NumJugador, Carta1, Carta2, Mano) x (numJugadores), NumJGanador, Cantidad;
+    int nJugadores = 4;
+    for(int j=0; j<nJugadores; j++){
+        int num = 3; // !!!!!!!!!! CHANGE
+
+        for(int i=0; i<4; i++){
+            if(players[i].playerNum == num)
+                break;
+        }
+        players[num].holeCards[0][0] = 'S';
+        players[num].holeCards[0][1] = 'A';
+        players[num].holeCards[1][0] = 'H';
+        players[num].holeCards[1][1] = 'K';
+        players[num].hand[0] = 1;
+        players[num].hand[1] = 9;
+    }
+
+    for(int i=0; i<4; i++){
+        if(players[i].inTheMatch){
+            string cardStr = "";
+            cardStr += players[i].holeCards[0][1] + players[i].holeCards[0][0];
+            QPixmap cardImg1(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+            cardStr += players[i].holeCards[1][1] + players[i].holeCards[1][0];
+            QPixmap cardImg2(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+
+            playersCards[i][0]->setPixmap(cardImg1);
+            playersCards[i][1]->setPixmap(cardImg2);
+        }
+    }
+
+    int nWinner = 1;
+    int money = 400;
+
+    if(nWinner == myNum)
+        QMessageBox::information(this,"Poker Online", "Congratulations! You won "+QString::number(money)+"$");
+    else
+        QMessageBox::information(this,"Poker Online", QString::fromStdString(players[nWinner].nickname)+" won "+QString::number(money)+"$");
+}
+
+void MainWindow::on_foldBtn_clicked()
+{
+    if(turn != myNum)
+        return;
+
+    players[myNum-1].isOut = true;
+    ammount = 0;
+
+    QPixmap skull(":/stage/resources/stage/skull.png");
+    playersIcons[myNum-1]->setPixmap(skull);
+
+    // -JugadaTurno- PACKAGE with code 0(Out)
+
+    defaultButtons();
+}
+
+void MainWindow::on_checkBtn_clicked()
+{
+    if(turn != myNum)
+        return;
+
+    if(ammount >= players[myNum-1].stack){
+        // -JugadaTurno- PACKAGE with code 3(All in)
+    }
+    else{
+        // -JugadaTurno- PACKAGE with code 1(Check/Call)
+    }
+
+    defaultButtons();
+}
+
+void MainWindow::on_raiseBtn_clicked()
+{
+    if(turn != myNum)
+        return;
+    if(ui->betSpinBox->value() < 1)
+        return;
+
+    ammount = ui->betSpinBox->value();
+    if(ammount > players[myNum-1].stack)
+        return;
+    else if(ammount == players[myNum-1].stack){
+        // -JugadaTurno- PACKAGE with code 3(All in)
+    }
+    else{
+        // -JugadaTurno- PACKAGE with code 2(Raise)
+    }
+    defaultButtons();
+}
+
+void MainWindow::on_allinBtn_clicked()
+{
+    if(turn != myNum)
+        return;
+
+    ui->betSpinBox->setValue(players[myNum-1].stack);
 }
 
 MainWindow::~MainWindow()
 {
     delete ui;
 }
-

@@ -32,10 +32,10 @@
         <file>resources/cards/9D.png</file>
         <file>resources/cards/9H.png</file>
         <file>resources/cards/9S.png</file>
-        <file>resources/cards/10C.png</file>
-        <file>resources/cards/10D.png</file>
-        <file>resources/cards/10H.png</file>
-        <file>resources/cards/10S.png</file>
+        <file>resources/cards/0C.png</file>
+        <file>resources/cards/0D.png</file>
+        <file>resources/cards/0H.png</file>
+        <file>resources/cards/0S.png</file>
         <file>resources/cards/AC.png</file>
         <file>resources/cards/AD.png</file>
         <file>resources/cards/AH.png</file>
@@ -75,5 +75,6 @@
         <file>resources/stage/player3.png</file>
         <file>resources/stage/player2.png</file>
         <file>resources/stage/waitAnimation.gif</file>
+        <file>resources/stage/skull.png</file>
     </qresource>
 </RCC>

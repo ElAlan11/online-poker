@@ -9,13 +9,16 @@ class PlayerMin
 public:
     PlayerMin();
     PlayerMin(int num, string name);
-    friend class pokergame;
+    friend class MainWindow;
 
 private:
     short int playerNum;
     string nickname;
     int stack;
+    bool inTheMatch;
+
     int bet;
+    bool isOut;
     char holeCards[2][2];
     int hand[2];
 };

@@ -1,43 +1,69 @@
 #include "mainserverapp.h"
 #include "qstring.h"
 #include "qtextstream.h"
+#include <QDebug>
 
 mainServerApp::mainServerApp()
 {
     contPlayers = 0;
 
-    //Wait for new conections
-    // For each entry conection a new Player object will be created and pushed to the vector
+    //tcpServer = new QTcpServer(this);
+    tcpServer = new QTcpServer;
 
-    Player p(contPlayers+1,"Alan");
-    players.push_back(p);
-    contPlayers++;
+    if(!tcpServer->listen(QHostAddress::Any, 49300)){
+        cout << "Unable to start the server";
+    }
 
-    // Considerar que pasa si se desconecta alguien en el lobby
+    QString ipAddress;
+    QList<QHostAddress> ipAddressesList = QNetworkInterface::allAddresses();
 
-    // Hacer nuevo constructor con un file descriptor y nombre
-    // Asignar números una vez empezada la partida
-    Player p2(contPlayers+1,"ete sech");
-    players.push_back(p2);
-    contPlayers++;
+    // To use the first non-localhost IPv4 address
+    for (int i = 0; i < ipAddressesList.size(); ++i) {
+        if (ipAddressesList.at(i) != QHostAddress::LocalHost &&
+                ipAddressesList.at(i).toIPv4Address()) {
+            ipAddress = ipAddressesList.at(i).toString();
+            break;
+        }
+    }
+    // if we did not find one, use IPv4 localhost
+    if (ipAddress.isEmpty())
+        ipAddress = QHostAddress(QHostAddress::LocalHost).toString();
 
-    Player p3(contPlayers+1,"el pepe");
-    players.push_back(p3);
-    contPlayers++;
+    cout << "Server IP: " << ipAddress.toStdString() << " - Server port: " << tcpServer->serverPort();
 
-    Player p4(contPlayers+1,"bbcita bblin");
-    players.push_back(p4);
-    contPlayers++;
+    QObject::connect(tcpServer, &QTcpServer::newConnection, this, &mainServerApp::playerConnected);
 
-    //Si hay dos jugadores y pasan 30 segundos se inicia la partida con los que esten si son mas de 1
+//    //Wait for new conections
+//    // For each entry conection a new Player object will be created and pushed to the vector
 
-    for(unsigned int i=0; i<players.size(); i++)
-        players[i].playerNum = i+1;
+//    Player p(contPlayers+1,"Alan");
+//    players.push_back(p);
+//    contPlayers++;
 
-    //Successives matches ends when there's only one player remaining
+//    // Considerar que pasa si se desconecta alguien en el lobby
 
-    newGame();
-    //while(contPlayers > 1 && newGame());
+//    // Hacer nuevo constructor con un file descriptor y nombre
+//    // Asignar números una vez empezada la partida
+
+//    Player p2(contPlayers+1,"ete sech");
+//    players.push_back(p2);
+//    contPlayers++;
+
+//    Player p3(contPlayers+1,"el pepe");
+//    players.push_back(p3);
+//    contPlayers++;
+
+//    Player p4(contPlayers+1,"bbcita bblin");
+//    players.push_back(p4);
+//    contPlayers++;
+
+//    for(unsigned int i=0; i<players.size(); i++)
+//        players[i].playerNum = i+1;
+
+//    //Successives matches ends when there's only one player remaining
+
+//    newGame();
+//    //while(contPlayers > 1 && newGame());
 
     return;
 }
@@ -536,3 +562,16 @@ void mainServerApp::whichHand(Player& p){
     return;
 }
 
+void mainServerApp::playerConnected(){
+    QTcpSocket *skt = tcpServer->nextPendingConnection();
+    // Create new player with that socket
+
+    QByteArray data = skt->readAll();
+    Player p(skt, "ete sech");
+    players.push_back(p);
+    contPlayers++;
+
+    // socket->write("aadssadas");
+    // socket->flush();
+    //socket->close();
+}

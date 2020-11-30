@@ -13,6 +13,12 @@ Player::Player()
     secPot = 0;
 }
 
+Player::Player(QTcpSocket *skt, string name)
+{
+    socket = skt;
+    nickname = name;
+}
+
 
 Player::Player(int number, string name)
 {

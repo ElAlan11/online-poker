@@ -4,9 +4,13 @@
 #include "player.h"
 #include <iostream>
 #include <algorithm>
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QNetworkInterface>
 
-class mainServerApp
+class mainServerApp : public QObject
 {
+    Q_OBJECT
 private:
     static const int INITIAL_BET = 5;
 
@@ -21,6 +25,11 @@ private:
     vector<char> suits;
     vector<char> values;
     map<char, vector<char>> deck;
+
+    QTcpServer *tcpServer = nullptr;
+
+private slots:
+    void playerConnected();
 
 
 public:

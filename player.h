@@ -6,13 +6,19 @@
 #include <vector>
 #include <iostream>
 #include <ctime>
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QNetworkInterface>
+
 using namespace std;
 
 class Player
 {
+
 public:
     Player();
     Player(int num, string name);
+    Player(QTcpSocket *skt, string name);
     friend class mainServerApp;
     void setCards(char** cards);
     int higherCardVal();
@@ -29,6 +35,7 @@ private:
     int secPot;
     char holeCards[2][2];
     int hand[2];
+    QTcpSocket *socket;
     //hand[0] = Hand
     //hand[1] = MaxValue
 

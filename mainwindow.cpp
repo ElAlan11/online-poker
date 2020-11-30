@@ -50,33 +50,103 @@ void MainWindow::initializeUI(){
 
 bool MainWindow::joinMatch(string nickname){
     myNum = 3;
+    this->nickname = nickname;
     int pkgCode = 0;
 
     // Request to join
     // -Buscar partida- PACKAGE
     // Wait for a -Partida encontrada- PACKAGE
 
-    if(pkgCode==0){ // !!!!!!!!!!!!!!! CHANGE FOR THE REAL PACKAGE CODE
-        // Read the package and add the others players
+    socket = new QTcpSocket(this);
+    connect(socket, &QTcpSocket::connected, this, &MainWindow::connected);
+    connect(socket, &QTcpSocket::disconnected, this, &MainWindow::disconnected);
+    connect(socket, &QTcpSocket::readyRead, this, &MainWindow::readyRead);
+    connect(socket, &QTcpSocket::bytesWritten, this, &MainWindow::bytesWritten);
+    connect(socket, &QAbstractSocket::errorOccurred, this, &MainWindow::displayError);
 
-        players[0] = PlayerMin(1, "Alan");
-        players[1] = PlayerMin(2, "ete sech");
-        players[2] = PlayerMin(3, "el pepe");
-        players[3] = PlayerMin(4, "bbcita bblin");
+    cout << "Connecting..." << endl;
+    socket->connectToHost("127.0.0.1",49300);
 
-        for(int i=0; i<4; i++)
-            playersInfo[i]->setText(QString::fromStdString(players[i].nickname+"\n"+to_string(players[i].stack)+"$"));
+//    if(pkgCode==0){ // !!!!!!!!!!!!!!! CHANGE FOR THE REAL PACKAGE CODE
+//        // Read the package and add the others players
 
-        ui->chatBox->setPlainText("");
-        ui->chatLineEdit->setText("");
+//        players[0] = PlayerMin(1, "Alan");
+//        players[1] = PlayerMin(2, "ete sech");
+//        players[2] = PlayerMin(3, "el pepe");
+//        players[3] = PlayerMin(4, "bbcita bblin");
 
-        playersInfo[myNum-1]->setProperty("myPlayer", true);
-        playersInfo[myNum-1]->style()->unpolish(playersInfo[myNum-1]);
-        playersInfo[myNum-1]->style()->polish(playersInfo[myNum-1]);
-        playersInfo[myNum-1]->update();
-    }
+//        for(int i=0; i<4; i++)
+//            playersInfo[i]->setText(QString::fromStdString(players[i].nickname+"\n"+to_string(players[i].stack)+"$"));
+
+//        ui->chatBox->setPlainText("");
+//        ui->chatLineEdit->setText("");
+
+//        playersInfo[myNum-1]->setProperty("myPlayer", true);
+//        playersInfo[myNum-1]->style()->unpolish(playersInfo[myNum-1]);
+//        playersInfo[myNum-1]->style()->polish(playersInfo[myNum-1]);
+//        playersInfo[myNum-1]->update();
+//    }
 
     return true;
+}
+
+void MainWindow::connected()
+{
+    cout << "Connected." << endl;
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_4_0);
+    out << QString::fromStdString(nickname);
+
+    socket->write(block);
+}
+void MainWindow::disconnected()
+{
+    cout << "Disconnected." << endl;
+}
+void MainWindow::bytesWritten(qint64 bytes)
+{
+    cout << "Bytes written: " << bytes << endl;
+}
+void MainWindow::readyRead()
+{
+    QDataStream in;
+    in.setDevice(socket);
+    in.setVersion(QDataStream::Qt_4_0);
+    in.startTransaction();
+
+    QString nextFortune;
+    in >> nextFortune;
+
+    if (!in.commitTransaction())
+        return;
+
+    cout << nextFortune.toStdString() << endl;
+}
+
+void MainWindow::displayError(QAbstractSocket::SocketError socketError)
+{
+    switch (socketError) {
+    case QAbstractSocket::RemoteHostClosedError:
+        break;
+    case QAbstractSocket::HostNotFoundError:
+        QMessageBox::information(this, tr("Poker online"),
+                                 tr("Host no encontrado. Por favor, verifica que la dirección "
+                                    "IP y el puerto sean correctos"));
+        break;
+    case QAbstractSocket::ConnectionRefusedError:
+        QMessageBox::information(this, tr("Poker online"),
+                                 tr("La conexión fue rechazada por el host. "
+                                    "La aplicación del servidor no esta activa "
+                                    "en este momento."));
+        break;
+    default:
+        QMessageBox::information(this, tr("Poker online"),
+                                 tr("Ocurrio el siguiente error: %1.")
+                                 .arg(socket->errorString()));
+    }
+
+    // Behaviour in case of error
 }
 
 bool MainWindow::gameLoop(){

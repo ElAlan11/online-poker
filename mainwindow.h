@@ -9,6 +9,11 @@
 #include <string>
 #include <vector>
 
+#include <QTcpSocket>
+#include <QObject>
+#include <QAbstractSocket>
+#include <QDataStream>
+
 using namespace std;
 
 QT_BEGIN_NAMESPACE
@@ -33,17 +38,20 @@ public:
     bool betRound();
 
 private slots:
-
     void on_foldBtn_clicked();
-
     void on_checkBtn_clicked();
-
     void on_raiseBtn_clicked();
-
     void on_allinBtn_clicked();
+
+    void connected();
+    void disconnected();
+    void bytesWritten(qint64 bytes);
+    void readyRead();
+    void displayError(QAbstractSocket::SocketError socketError);
 
 private:
     Ui::MainWindow *ui;
+    QTcpSocket *socket;
     QLabel* playersInfo[4];
     QLabel* playersIcons[4];
     QLabel* playersCards[4][2];
@@ -53,6 +61,7 @@ private:
 
     int turn;
     int myNum;
+    string nickname;
     int pot;
     PlayerMin players[4];
     char commCards[5][2] = {{'X'}};

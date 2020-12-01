@@ -1,16 +1,18 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QObject>
 #include <QMainWindow>
 #include <QMessageBox>
 #include <QStyle>
+
 #include "playermin.h"
-#include "mainserverapp.h"
+
 #include <string>
 #include <vector>
+#include <iostream>
 
 #include <QTcpSocket>
-#include <QObject>
 #include <QAbstractSocket>
 #include <QDataStream>
 
@@ -48,6 +50,9 @@ private slots:
     void bytesWritten(qint64 bytes);
     void readyRead();
     void displayError(QAbstractSocket::SocketError socketError);
+
+signals:
+    void matchFound();
 
 private:
     Ui::MainWindow *ui;

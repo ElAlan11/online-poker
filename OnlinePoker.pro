@@ -13,19 +13,13 @@ CONFIG += c++11
 SOURCES += \
     lobby.cpp \
     main.cpp \
-    mainserverapp.cpp \
     mainwindow.cpp \
-    player.cpp \
-    playermin.cpp \
-    pokergame.cpp
+    playermin.cpp
 
 HEADERS += \
     lobby.h \
-    mainserverapp.h \
     mainwindow.h \
-    player.h \
-    playermin.h \
-    pokergame.h
+    playermin.h
 
 FORMS += \
     lobby.ui \

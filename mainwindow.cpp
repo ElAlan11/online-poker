@@ -49,13 +49,7 @@ void MainWindow::initializeUI(){
 }
 
 bool MainWindow::joinMatch(string nickname){
-    myNum = 3;
     this->nickname = nickname;
-    int pkgCode = 0;
-
-    // Request to join
-    // -Buscar partida- PACKAGE
-    // Wait for a -Partida encontrada- PACKAGE
 
     socket = new QTcpSocket(this);
     connect(socket, &QTcpSocket::connected, this, &MainWindow::connected);
@@ -67,25 +61,9 @@ bool MainWindow::joinMatch(string nickname){
     cout << "Connecting..." << endl;
     socket->connectToHost("127.0.0.1",49300);
 
-//    if(pkgCode==0){ // !!!!!!!!!!!!!!! CHANGE FOR THE REAL PACKAGE CODE
-//        // Read the package and add the others players
-
-//        players[0] = PlayerMin(1, "Alan");
-//        players[1] = PlayerMin(2, "ete sech");
-//        players[2] = PlayerMin(3, "el pepe");
-//        players[3] = PlayerMin(4, "bbcita bblin");
-
-//        for(int i=0; i<4; i++)
-//            playersInfo[i]->setText(QString::fromStdString(players[i].nickname+"\n"+to_string(players[i].stack)+"$"));
-
-//        ui->chatBox->setPlainText("");
-//        ui->chatLineEdit->setText("");
-
-//        playersInfo[myNum-1]->setProperty("myPlayer", true);
-//        playersInfo[myNum-1]->style()->unpolish(playersInfo[myNum-1]);
-//        playersInfo[myNum-1]->style()->polish(playersInfo[myNum-1]);
-//        playersInfo[myNum-1]->update();
-//    }
+    QEventLoop loop;
+    loop.connect(this, SIGNAL(matchFound()), SLOT(quit()));
+    loop.exec();
 
     return true;
 }
@@ -96,6 +74,7 @@ void MainWindow::connected()
     QByteArray block;
     QDataStream out(&block, QIODevice::WriteOnly);
     out.setVersion(QDataStream::Qt_4_0);
+    out << (qint8)1;
     out << QString::fromStdString(nickname);
 
     socket->write(block);
@@ -113,15 +92,52 @@ void MainWindow::readyRead()
     QDataStream in;
     in.setDevice(socket);
     in.setVersion(QDataStream::Qt_4_0);
-    in.startTransaction();
 
-    QString nextFortune;
-    in >> nextFortune;
+    in.startTransaction();
+    qint8 pkgCode;
+    in >> pkgCode;
 
     if (!in.commitTransaction())
         return;
+    cout << "Package code: " << pkgCode << endl;
 
-    cout << nextFortune.toStdString() << endl;
+    switch(pkgCode){
+
+    case 2:
+    {
+        in.startTransaction();
+        qint8 mynum;
+        in >> mynum;
+        qint8 playersCont;
+        in >> playersCont;
+
+        QString names[4];
+        for(int i=0; i<playersCont; i++)
+            in >> names[i];
+
+        if(!in.commitTransaction())
+            return;
+
+        myNum = mynum;
+
+        for(int i=0; i<playersCont; i++){
+            players[i] = PlayerMin(i+1, names[i].toStdString());
+            playersInfo[i]->setText(QString::fromStdString(players[i].nickname+"\n"+to_string(players[i].stack)+"$"));
+        }
+
+        ui->chatBox->setPlainText("");
+        ui->chatLineEdit->setText("");
+
+        playersInfo[myNum-1]->setProperty("myPlayer", true);
+        playersInfo[myNum-1]->style()->unpolish(playersInfo[myNum-1]);
+        playersInfo[myNum-1]->style()->polish(playersInfo[myNum-1]);
+        playersInfo[myNum-1]->update();
+
+        emit matchFound();
+        break;
+    }
+
+    }
 }
 
 void MainWindow::displayError(QAbstractSocket::SocketError socketError)
@@ -184,121 +200,127 @@ bool MainWindow::gameLoop(){
     defaultButtons();
     // --------------------------------------------
 
-    //Wait for a -Jugador sin dinero- or -Cartas personales package-
+    for(PlayerMin p : players)
+        if(p.inTheMatch)
+            cout << p;
 
-    if(pkgCode == 0){
-        players[myNum-1].holeCards[0][0] = 'C';
-        players[myNum-1].holeCards[0][1] = '0';
-        players[myNum-1].holeCards[1][0] = 'D';
-        players[myNum-1].holeCards[1][1] = 'J';
 
-        string cardStr = "";
-        cardStr += players[myNum-1].holeCards[0][1];
-        cardStr += players[myNum-1].holeCards[0][0];
-        QPixmap cardImg1(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
-        cardStr = "";
-        cardStr += players[myNum-1].holeCards[1][1];
-        cardStr += players[myNum-1].holeCards[1][0];
-        QPixmap cardImg2(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
 
-        ui->holeCard1->setPixmap(cardImg1);
-        ui->holeCard2->setPixmap(cardImg2);
+//    //Wait for a -Jugador sin dinero- or -Cartas personales package-
 
-        //pkgCode = 1; // TEST
-    }
-    if(pkgCode == 1){ // Player out
-        int playerOut = 3;
-        //pkgCode = 2; // TEST
+//    if(pkgCode == 0){
+//        players[myNum-1].holeCards[0][0] = 'C';
+//        players[myNum-1].holeCards[0][1] = '0';
+//        players[myNum-1].holeCards[1][0] = 'D';
+//        players[myNum-1].holeCards[1][1] = 'J';
 
-        if(pkgCode == 2) // Partida terminada
-        {
-            QMessageBox::critical(this,"Game over", "All the other players left the game.");
-            this->close();
-            return false;
-        }
+//        string cardStr = "";
+//        cardStr += players[myNum-1].holeCards[0][1];
+//        cardStr += players[myNum-1].holeCards[0][0];
+//        QPixmap cardImg1(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+//        cardStr = "";
+//        cardStr += players[myNum-1].holeCards[1][1];
+//        cardStr += players[myNum-1].holeCards[1][0];
+//        QPixmap cardImg2(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
 
-        if(playerOut == myNum){
-            QMessageBox::critical(this,"Game over", "You ran out of money.");
-            this->close();
-            return false;
-        }
-        else{
-            players[playerOut-1].inTheMatch = false;
+//        ui->holeCard1->setPixmap(cardImg1);
+//        ui->holeCard2->setPixmap(cardImg2);
 
-            playersIcons[playerOut-1]->setVisible(false);
-            playersInfo[playerOut-1]->setVisible(false);
-            playersCards[playerOut-1][0]->setVisible(false);
-            playersCards[playerOut-1][1]->setVisible(false);
-            bets[playerOut-1]->setVisible(false);
-            chipsIcons[playerOut-1]->setVisible(false);
-        }
-    }
+//        //pkgCode = 1; // TEST
+//    }
+//    if(pkgCode == 1){ // Player out
+//        int playerOut = 3;
+//        //pkgCode = 2; // TEST
 
-    pkgCode = 3; // TEST
-    // Waits for a -Estado global- PKG
-    if(pkgCode == 3){ // Estado global
-        buffer = "";
-        updateGameState(buffer);
-    }
+//        if(pkgCode == 2) // Partida terminada
+//        {
+//            QMessageBox::critical(this,"Game over", "All the other players left the game.");
+//            this->close();
+//            return false;
+//        }
 
-    // PRE FLOP
-    if(!betRound())
-        return false;
+//        if(playerOut == myNum){
+//            QMessageBox::critical(this,"Game over", "You ran out of money.");
+//            this->close();
+//            return false;
+//        }
+//        else{
+//            players[playerOut-1].inTheMatch = false;
 
-    // TEST BLOCK
-//    turn = 1;
-//    while(betRound())
-//        turn++;
+//            playersIcons[playerOut-1]->setVisible(false);
+//            playersInfo[playerOut-1]->setVisible(false);
+//            playersCards[playerOut-1][0]->setVisible(false);
+//            playersCards[playerOut-1][1]->setVisible(false);
+//            bets[playerOut-1]->setVisible(false);
+//            chipsIcons[playerOut-1]->setVisible(false);
+//        }
+//    }
 
-    //-------------
+//    pkgCode = 3; // TEST
+//    // Waits for a -Estado global- PKG
+//    if(pkgCode == 3){ // Estado global
+//        buffer = "";
+//        updateGameState(buffer);
+//    }
 
-//    // THE FLOP
-//    // Wait for -Cartas comunitarias- PACKAGE
-
-    for(int i=0; i<3; i++){
-        commCards[i][0] = 'S';
-        commCards[i][1] = '3';
-
-        string cardStr = "";
-        cardStr += commCards[i][1];
-        cardStr += commCards[i][0];
-        QPixmap cardImg(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
-        commCardIcons[i]->setPixmap(cardImg);
-    }
-
+//    // PRE FLOP
 //    if(!betRound())
 //        return false;
 
-//    // THE TURN
-//    // Wait for -Abrir carta- PACKAGE
-    commCards[3][0] = 'C';
-    commCards[3][1] = 'A';
+//    // TEST BLOCK
+////    turn = 1;
+////    while(betRound())
+////        turn++;
 
-    string cardStr = "";
-    cardStr += commCards[3][1];
-    cardStr += commCards[3][0];
-    QPixmap cardImg(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
-    commCardIcons[3]->setPixmap(cardImg);
+//    //-------------
 
-//    if(!betRound())
-//        return false;
+////    // THE FLOP
+////    // Wait for -Cartas comunitarias- PACKAGE
 
-//    // THE RIVER
-//    // Wait for -Abrir carta- PACKAGE
-    commCards[4][0] = 'D';
-    commCards[4][1] = '2';
+//    for(int i=0; i<3; i++){
+//        commCards[i][0] = 'S';
+//        commCards[i][1] = '3';
 
-    string cardStr2 = "";
-    cardStr2 += commCards[4][1];
-    cardStr2 += commCards[4][0];
-    QPixmap cardImg2(":/cards/resources/cards/"+QString::fromStdString(cardStr2)+".png");
-    commCardIcons[4]->setPixmap(cardImg2);
+//        string cardStr = "";
+//        cardStr += commCards[i][1];
+//        cardStr += commCards[i][0];
+//        QPixmap cardImg(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+//        commCardIcons[i]->setPixmap(cardImg);
+//    }
 
-//    if(!betRound())
-//        return false;
+////    if(!betRound())
+////        return false;
 
-//    // Wait for -Showdown- PACKAGE
-    showdown(buffer);
+////    // THE TURN
+////    // Wait for -Abrir carta- PACKAGE
+//    commCards[3][0] = 'C';
+//    commCards[3][1] = 'A';
+
+//    string cardStr = "";
+//    cardStr += commCards[3][1];
+//    cardStr += commCards[3][0];
+//    QPixmap cardImg(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+//    commCardIcons[3]->setPixmap(cardImg);
+
+////    if(!betRound())
+////        return false;
+
+////    // THE RIVER
+////    // Wait for -Abrir carta- PACKAGE
+//    commCards[4][0] = 'D';
+//    commCards[4][1] = '2';
+
+//    string cardStr2 = "";
+//    cardStr2 += commCards[4][1];
+//    cardStr2 += commCards[4][0];
+//    QPixmap cardImg2(":/cards/resources/cards/"+QString::fromStdString(cardStr2)+".png");
+//    commCardIcons[4]->setPixmap(cardImg2);
+
+////    if(!betRound())
+////        return false;
+
+////    // Wait for -Showdown- PACKAGE
+//    showdown(buffer);
 
     return true;
 }

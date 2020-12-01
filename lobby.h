@@ -5,7 +5,6 @@
 #include "qmovie.h"
 #include "mainwindow.h"
 #include <QDialog>
-#include "pokergame.h"
 
 namespace Ui {
 class Lobby;

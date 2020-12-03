@@ -53,6 +53,7 @@ private slots:
 
 signals:
     void matchFound();
+    void beginPreFlop();
 
 private:
     Ui::MainWindow *ui;

@@ -49,6 +49,7 @@ void MainWindow::initializeUI(){
 }
 
 bool MainWindow::joinMatch(string nickname){
+
     this->nickname = nickname;
 
     socket = new QTcpSocket(this);
@@ -59,7 +60,7 @@ bool MainWindow::joinMatch(string nickname){
     connect(socket, &QAbstractSocket::errorOccurred, this, &MainWindow::displayError);
 
     cout << "Connecting..." << endl;
-    socket->connectToHost("127.0.0.1",49300);
+    socket->connectToHost("192.168.56.1",49300);
 
     QEventLoop loop;
     loop.connect(this, SIGNAL(matchFound()), SLOT(quit()));
@@ -78,10 +79,12 @@ void MainWindow::connected()
     out << QString::fromStdString(nickname);
 
     socket->write(block);
+    socket->flush();
 }
 void MainWindow::disconnected()
 {
     cout << "Disconnected." << endl;
+    socket->close();
 }
 void MainWindow::bytesWritten(qint64 bytes)
 {
@@ -103,7 +106,7 @@ void MainWindow::readyRead()
 
     switch(pkgCode){
 
-    case 2:
+    case 2: // Partida encontrada
     {
         in.startTransaction();
         qint8 mynum;
@@ -137,6 +140,25 @@ void MainWindow::readyRead()
         break;
     }
 
+    case 3: // Nueva partida
+    {
+        in.startTransaction();
+        qint8 cards[2][2];
+        in >> cards[0][0];
+        in >> cards[0][1];
+        in >> cards[1][0];
+        in >> cards[1][1];
+
+        if(!in.commitTransaction())
+            return;
+
+        for(int i=0; i<2; i++)
+            for(int j=0; j<2; j++)
+                players[myNum-1].holeCards[i][j] = cards[i][j];
+        cout << players[myNum-1];
+        break;
+    }
+
     }
 }
 
@@ -166,7 +188,6 @@ void MainWindow::displayError(QAbstractSocket::SocketError socketError)
 }
 
 bool MainWindow::gameLoop(){
-
     // ---------- INITIALIZATION BLOCK ----------
     QPixmap grayCard(":/cards/resources/cards/gray_back.png");
     QPixmap redCard(":/cards/resources/cards/red_back.png");
@@ -204,7 +225,9 @@ bool MainWindow::gameLoop(){
         if(p.inTheMatch)
             cout << p;
 
-
+    QEventLoop loop;
+    loop.connect(this, SIGNAL(beginPreFlop()), SLOT(quit()));
+    loop.exec();
 
 //    //Wait for a -Jugador sin dinero- or -Cartas personales package-
 

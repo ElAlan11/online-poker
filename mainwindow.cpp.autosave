@@ -201,7 +201,6 @@ bool MainWindow::gameLoop(){
     QPixmap redCard(":/cards/resources/cards/red_back.png");
     pot = 0;
     lastBet = 0;
-    int pkgCode = 0;
     string buffer = "";
 
     for(int i=0; i<4; i++){

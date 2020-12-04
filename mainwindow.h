@@ -45,6 +45,7 @@ private slots:
     void on_raiseBtn_clicked();
     void on_allinBtn_clicked();
 
+public slots:
     void connected();
     void disconnected();
     void bytesWritten(qint64 bytes);
@@ -71,6 +72,8 @@ private:
     int pot;
     PlayerMin players[4];
     char commCards[5][2] = {{'X'}};
+
+    int state;
 
     int ammount;
     int action;

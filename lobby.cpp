@@ -1,6 +1,6 @@
 #include "lobby.h"
 #include "ui_lobby.h"
-
+#include "mainwindow.h"
 
 Lobby::Lobby(QWidget *parent) :
     QDialog(parent),
@@ -35,14 +35,5 @@ void Lobby::on_joinBtn_clicked()
     ui->nicknameLinedit->setEnabled(false);
     ui->joinBtn->setEnabled(false);
 
-    int res = m.joinMatch(ui->nicknameLinedit->text().toStdString());
-
-    if(res){
-        close();
-        m.show();
-        m.gameLoop();
-
-//        while(m.gameLoop());
-//        m.close();
-    }
+    ((MainWindow*)parentWidget())->joinMatch(ui->nicknameLinedit->text().toStdString());
 }

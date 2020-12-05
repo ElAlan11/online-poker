@@ -5,6 +5,10 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
+
+    lobby = new Lobby(this);
+    lobby->show();
+
     state = 0;
     initializeUI();
 }
@@ -54,17 +58,17 @@ bool MainWindow::joinMatch(string nickname){
     this->nickname = nickname;
     socket = new QTcpSocket(this);
 
-    connect(socket, SIGNAL(connected()), this, SLOT(connected()));
-    connect(socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
-    connect(socket, SIGNAL(readyRead()), this, SLOT(readyRead()));
-//    connect(socket, &QTcpSocket::bytesWritten, this, &MainWindow::bytesWritten);
-    connect(socket, SIGNAL(errorOccurred()), this, SLOT(displayError()));
+    connect(socket, &QTcpSocket::connected, this, &MainWindow::connected);
+    connect(socket, &QTcpSocket::disconnected, this, &MainWindow::disconnected);
+    connect(socket, &QTcpSocket::readyRead, this, &MainWindow::readyRead);
+    connect(socket, &QTcpSocket::errorOccurred, this, &MainWindow::displayError);
+//    connect(socket, &QTcpSocket::bytesWritten, this, &MainWindow::bytesWritten);}
+    connect(this, &MainWindow::matchFound, this, &MainWindow::startGameLoop);
 
     cout << "Connecting..." << endl;
 
     // AGREGAR CAJA DE TEXTO
     socket->connectToHost("127.0.0.1",49300);
-    state = 1;
 
     return false;
 }
@@ -80,7 +84,7 @@ void MainWindow::connected()
 
     socket->write(block);
     socket->flush();
-    state = 2;
+    state = 1;
 }
 void MainWindow::disconnected()
 {
@@ -119,6 +123,9 @@ void MainWindow::readyRead()
 
         case 2: // Partida encontrada
         {
+            if(state != 1)
+                break;
+
             qint8 mynum;
             in >> mynum;
             qint8 playersCont;
@@ -144,12 +151,16 @@ void MainWindow::readyRead()
             playersInfo[myNum-1]->style()->polish(playersInfo[myNum-1]);
             playersInfo[myNum-1]->update();
 
+            state = 2;
             emit matchFound();
             break;
         }
 
         case 3: // Nueva partida
         {
+            if(state != 2)
+                break;
+
             qint8 cards[2][2];
             in >> cards[0][0];
             in >> cards[0][1];
@@ -168,6 +179,15 @@ void MainWindow::readyRead()
         if(in.atEnd())
             endReached = true;
     }
+}
+
+void MainWindow::startGameLoop(){
+    lobby->close();
+    show();
+    gameLoop();
+
+    ////        while(m.gameLoop());
+    ////        close();
 }
 
 void MainWindow::displayError(QAbstractSocket::SocketError socketError)
@@ -201,7 +221,6 @@ bool MainWindow::gameLoop(){
     QPixmap redCard(":/cards/resources/cards/red_back.png");
     pot = 0;
     lastBet = 0;
-    int pkgCode = 0;
     string buffer = "";
 
     for(int i=0; i<4; i++){
@@ -234,6 +253,8 @@ bool MainWindow::gameLoop(){
             cout << p;
 
     QEventLoop loop;
+    state = 2;
+
     loop.connect(this, SIGNAL(beginPreFlop()), SLOT(quit()));
     loop.exec();
 

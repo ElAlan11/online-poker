@@ -7,6 +7,7 @@
 #include <QStyle>
 
 #include "playermin.h"
+#include "lobby.h"
 
 #include <string>
 #include <vector>
@@ -51,6 +52,7 @@ public slots:
     void bytesWritten(qint64 bytes);
     void readyRead();
     void displayError(QAbstractSocket::SocketError socketError);
+    void startGameLoop();
 
 signals:
     void matchFound();
@@ -58,6 +60,8 @@ signals:
 
 private:
     Ui::MainWindow *ui;
+    Lobby *lobby;
+
     QTcpSocket *socket;
     QLabel* playersInfo[4];
     QLabel* playersIcons[4];

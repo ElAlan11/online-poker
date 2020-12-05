@@ -3,7 +3,6 @@
 
 #include <QDialog>
 #include "qmovie.h"
-#include "mainwindow.h"
 #include <QDialog>
 
 namespace Ui {
@@ -23,7 +22,6 @@ private slots:
 
 private:
     Ui::Lobby *ui;
-    MainWindow m;
 };
 
 #endif // LOBBY_H

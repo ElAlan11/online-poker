@@ -34,11 +34,13 @@ public:
     void initializeUI();
     void defaultButtons();
     bool joinMatch(string nickname);
-    void updateGameState(string buffer);
+    void updateGameState();
     void showdown(string buffer);
     bool gameLoop();
     void playTurn();
     bool betRound();
+    void deletePlayer(int num);
+    void closeGame();
 
 private slots:
     void on_foldBtn_clicked();
@@ -52,10 +54,10 @@ public slots:
     void bytesWritten(qint64 bytes);
     void readyRead();
     void displayError(QAbstractSocket::SocketError socketError);
-    void startGameLoop();
+    void initializeNewGame();
 
 signals:
-    void matchFound();
+    void matchStarted();
     void beginPreFlop();
 
 private:

@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>370</width>
-    <height>499</height>
+    <height>620</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,9 +18,9 @@
     <normaloff>:/stage/resources/stage/icon.png</normaloff>:/stage/resources/stage/icon.png</iconset>
   </property>
   <property name="styleSheet">
-   <string notr="true">
-
-background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0.144279 rgba(168, 20, 20, 255), stop:0.502488 rgba(164, 43, 65, 255), stop:0.853993 rgba(96, 22, 22, 255));</string>
+   <string notr="true">#Lobby{
+background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0.144279 rgba(168, 20, 20, 255), stop:0.502488 rgba(164, 43, 65, 255), stop:0.853993 rgba(96, 22, 22, 255));
+}</string>
   </property>
   <widget class="QGroupBox" name="groupBox">
    <property name="geometry">
@@ -28,7 +28,7 @@ background-color: qlineargradient(spread:pad, x1:0, y1:1, x2:0, y2:0, stop:0.144
      <x>20</x>
      <y>20</y>
      <width>331</width>
-     <height>461</height>
+     <height>581</height>
     </rect>
    </property>
    <property name="styleSheet">
@@ -86,7 +86,7 @@ font-family: century gothic;</string>
     <property name="geometry">
      <rect>
       <x>80</x>
-      <y>380</y>
+      <y>520</y>
       <width>161</width>
       <height>31</height>
      </rect>
@@ -104,6 +104,9 @@ QPushButton:hover{
 	background: rgba(205, 219, 0, 0.9);
 }
 
+QPushButton:disabled{
+	background: rgba(148, 148, 148, 0.9);
+}
 </string>
     </property>
     <property name="text">
@@ -167,6 +170,96 @@ font-family: century gothic;</string>
     </property>
     <property name="text">
      <string>Waiting for players...</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="ipLinedit">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>395</y>
+      <width>251</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;
+border: none;
+border-bottom: 1px solid #fff;
+font-family: century gothic;
+font-size: 20px;
+color: white;</string>
+    </property>
+    <property name="text">
+     <string>fe80::3922:557b:725a:3c3e</string>
+    </property>
+    <property name="maxLength">
+     <number>39</number>
+    </property>
+    <property name="placeholderText">
+     <string/>
+    </property>
+   </widget>
+   <widget class="QLabel" name="ipLbl">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>380</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:white;
+background: transparent;
+font-family: century gothic;</string>
+    </property>
+    <property name="text">
+     <string>IP Adress</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="portLbl">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>440</y>
+      <width>81</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">color:white;
+background: transparent;
+font-family: century gothic;</string>
+    </property>
+    <property name="text">
+     <string>Port</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="portLinedit">
+    <property name="geometry">
+     <rect>
+      <x>40</x>
+      <y>460</y>
+      <width>251</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;
+border: none;
+border-bottom: 1px solid #fff;
+font-family: century gothic;
+font-size: 20px;
+color: white;</string>
+    </property>
+    <property name="text">
+     <string>49300</string>
+    </property>
+    <property name="maxLength">
+     <number>5</number>
+    </property>
+    <property name="placeholderText">
+     <string/>
     </property>
    </widget>
   </widget>

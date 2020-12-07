@@ -24,7 +24,9 @@
    <bool>false</bool>
   </property>
   <property name="styleSheet">
-   <string notr="true">background-image: url(:/stage/resources/stage/poker_bg2.jpg);
+   <string notr="true">#MainWindow{
+background-image: url(:/stage/resources/stage/poker_bg2.jpg);
+}
 
 </string>
   </property>
@@ -1046,6 +1048,46 @@ QPushButton:hover{
      <pixmap resource="resources.qrc">:/cards/resources/cards/gray_back.png</pixmap>
     </property>
     <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+   </widget>
+   <widget class="QLabel" name="waitingLbl">
+    <property name="geometry">
+     <rect>
+      <x>360</x>
+      <y>10</y>
+      <width>521</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">font-family: century gothic;
+font-size: 35px;
+color: white;</string>
+    </property>
+    <property name="text">
+     <string>Waiting for the other players...</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="loadingAnimation">
+    <property name="geometry">
+     <rect>
+      <x>520</x>
+      <y>40</y>
+      <width>130</width>
+      <height>130</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background: transparent;</string>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
+    <property name="scaledContents">
+     <bool>true</bool>
+    </property>
+    <property name="wordWrap">
      <bool>true</bool>
     </property>
    </widget>

@@ -15,6 +15,7 @@ class Lobby : public QDialog
 
 public:
     explicit Lobby(QWidget *parent = nullptr);
+    void reInitialize();
     ~Lobby();
 
 private slots:

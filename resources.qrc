@@ -76,5 +76,6 @@
         <file>resources/stage/player2.png</file>
         <file>resources/stage/waitAnimation.gif</file>
         <file>resources/stage/skull.png</file>
+        <file>resources/stage/waiting.gif</file>
     </qresource>
 </RCC>

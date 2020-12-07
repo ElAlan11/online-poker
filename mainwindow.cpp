@@ -5,7 +5,6 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
 {
-
     lobby = new Lobby(this);
     lobby->show();
 
@@ -53,7 +52,7 @@ void MainWindow::initializeUI(){
     chipsIcons[3] = ui->chipsIconP4;
 }
 
-bool MainWindow::joinMatch(string nickname){
+void MainWindow::joinMatch(string nickname, QString ip, QString port){
 
     this->nickname = nickname;
     socket = new QTcpSocket(this);
@@ -62,15 +61,14 @@ bool MainWindow::joinMatch(string nickname){
     connect(socket, &QTcpSocket::disconnected, this, &MainWindow::disconnected);
     connect(socket, &QTcpSocket::readyRead, this, &MainWindow::readyRead);
     connect(socket, &QTcpSocket::errorOccurred, this, &MainWindow::displayError);
-//    connect(socket, &QTcpSocket::bytesWritten, this, &MainWindow::bytesWritten);}
     connect(this, &MainWindow::matchStarted, this, &MainWindow::initializeNewGame);
 
     cout << "Connecting..." << endl;
 
-    // AGREGAR CAJA DE TEXTO
-    socket->connectToHost("127.0.0.1",49300);
 
-    return false;
+//    QNetworkConfiguration::setConnectTimeout(1000);
+    // AGREGAR CAJA DE TEXTO
+    socket->connectToHost(ip, port.toInt());
 }
 
 void MainWindow::connected()
@@ -101,6 +99,9 @@ void MainWindow::bytesWritten(qint64 bytes)
 void MainWindow::readyRead()
 {
     cout << "Bytes recibidos: "<< socket->bytesAvailable() << endl;
+
+    if(socket->bytesAvailable() == 0)
+        return;
 
     QByteArray bytearray = socket->readAll();
     QDataStream in(bytearray);
@@ -206,12 +207,11 @@ void MainWindow::readyRead()
 
                 if(turn == myNum)
                     playTurn();
-//                state = 4;
             }
             break;
         }
 
-        case 6:
+        case 6: // Turno jugado
         {
             if(state > 2){
                 qint8 numPlayer;
@@ -230,8 +230,6 @@ void MainWindow::readyRead()
                 case 0: // Out
                     players[numPlayer-1].isOut = true;
                     playersIcons[numPlayer-1]->setPixmap(skull);
-//                    players[turn-1].isOut = true;
-//                    playersIcons[turn-1]->setPixmap(skull);
                     break;
                 case 1:
                     break;
@@ -247,6 +245,168 @@ void MainWindow::readyRead()
             break;
         }
 
+        case 7: // Cartas comunitarias
+        {
+            if(state != 3)
+                break;
+
+            qint8 cards[3][2];
+            in >> cards[0][0];
+            in >> cards[0][1];
+            in >> cards[1][0];
+            in >> cards[1][1];
+            in >> cards[2][0];
+            in >> cards[2][1];
+
+            for(int i=0; i<3; i++){
+                commCards[i][0] = cards[i][0];
+                commCards[i][1] = cards[i][1];
+
+                string cardStr = "";
+                cardStr += commCards[i][1];
+                cardStr += commCards[i][0];
+                QPixmap cardImg(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+                commCardIcons[i]->setPixmap(cardImg);
+            }
+
+            state = 4;
+            break;
+        }
+
+        case 8: // Abrir carta
+        {
+            if(state != 4 && state != 5)
+                break;
+
+            qint8 card[2];
+            in >> card[0];
+            in >> card[1];
+
+            commCards[state-1][0] = card[0];
+            commCards[state-1][1] = card[1];
+
+            string cardStr = "";
+            cardStr += commCards[state-1][1];
+            cardStr += commCards[state-1][0];
+            QPixmap cardImg(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+            commCardIcons[state-1]->setPixmap(cardImg);
+
+            state++;
+            break;
+        }
+
+        case 9: // Showdown
+        {
+            if(state != 6)
+                break;
+
+            qint8 countPlayers;
+            in >> countPlayers;
+            qint8 qWinner;
+            in >> qWinner;
+            qint16 qMoney;
+            in >> qMoney;
+
+            int winner = qWinner;
+            int money = qMoney;
+
+            qint8 num;
+            qint8 cards[2][2];
+            qint16 hand[2];
+
+            for(int i=0; i<countPlayers; i++){
+                in >> num;
+                in >> cards[0][0];
+                in >> cards[0][1];
+                in >> cards[1][0];
+                in >> cards[1][1];
+                in >> hand[0];
+                in >> hand[1];
+
+                players[num-1].holeCards[0][0] = cards[0][0];
+                players[num-1].holeCards[0][1] = cards[0][1];
+                players[num-1].holeCards[1][0] = cards[1][0];
+                players[num-1].holeCards[1][1] = cards[1][1];
+                players[num-1].hand[0] = hand[0];
+                players[num-1].hand[1] = hand[1];
+            }
+
+            for(int i=0; i<4; i++){
+                if(players[i].inTheMatch){
+                    string cardStr = "";
+                    cardStr += players[i].holeCards[0][1];
+                    cardStr += players[i].holeCards[0][0];
+                    QPixmap cardImg1(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+                    cardStr = "";
+                    cardStr += players[i].holeCards[1][1];
+                    cardStr += players[i].holeCards[1][0];
+                    QPixmap cardImg2(":/cards/resources/cards/"+QString::fromStdString(cardStr)+".png");
+
+                    playersCards[i][0]->setPixmap(cardImg1);
+                    playersCards[i][1]->setPixmap(cardImg2);
+                }
+            }
+
+            QString txtHand;
+
+            switch(players[qWinner-1].hand[0]){
+            case 1: txtHand = "Higher Card"; break;
+            case 2: txtHand = "Pair"; break;
+            case 3: txtHand = "Two Pairs"; break;
+            case 4: txtHand = "Three of a kind"; break;
+            case 5: txtHand = "Straight"; break;
+            case 6: txtHand = "Flush"; break;
+            case 7: txtHand = "Full house"; break;
+            case 8: txtHand = "Four of a kind"; break;
+            case 9: txtHand = "Straight Flush"; break;
+            case 10: txtHand = "Royal Flush"; break;
+            }
+
+            QMessageBox::StandardButton reply;
+
+            if(winner == myNum)
+                reply = QMessageBox::question(this, "Poker Online", "Congratulations! You won "+QString::number(money)
+                                              +"$\nYour hand: " + txtHand + "\n\nDo you want to play another round?",
+                                              QMessageBox::Yes|QMessageBox::No);
+
+            else
+                reply = QMessageBox::question(this, "Poker Online", QString::fromStdString(players[winner-1].nickname)
+                                            + " won "+QString::number(money) + "$\nHand: " + txtHand
+                                            + "\n\nDo you want to play another round?",
+                                            QMessageBox::Yes|QMessageBox::No);
+
+            QByteArray block;
+            QDataStream out(&block, QIODevice::WriteOnly);
+            out.setVersion(QDataStream::Qt_4_0);
+            out << (qint8)15;
+
+            if (reply == QMessageBox::Yes) {
+                cout << "\n--- New game started ---\n";
+
+                QMovie *movie = new QMovie(":/stage/resources/stage/waiting.gif");
+                movie->setSpeed(200);
+                ui->loadingAnimation->setMovie(movie);
+                movie->start();
+
+                ui->loadingAnimation->show();
+                ui->waitingLbl->show();
+
+                state = 2;
+                out << (qint8)1;
+                socket->write(block);
+                socket->flush();
+                emit readyRead();
+            } else {
+                out << (qint8)0;
+                socket->write(block);
+                socket->flush();
+
+                closeGame();
+            }
+
+            break;
+        }
+
         case 10: // Jugador eliminado
         {
             if(state != 2 && state != 3)
@@ -259,7 +419,7 @@ void MainWindow::readyRead()
                 QMessageBox::critical(this,"Game over", "You ran out of money.");
                 closeGame();
             }
-//            deletePlayer(nPlayer);
+            deletePlayer(nPlayer);
             break;
         }
 
@@ -277,6 +437,18 @@ void MainWindow::readyRead()
             break;
         }
 
+        case 12: // Sala llena
+        {
+            cout << "Entre e case 12" << endl;
+            if(state > 1)
+                break;
+
+            QMessageBox::information(lobby, tr("Poker online"),
+                                     tr("The table you're trying to join is full. Please try later."));
+            lobby->reInitialize();
+            break;
+        }
+
         case 13: // Jugador dejo la partida
         {
             qint8 nPlayer;
@@ -286,11 +458,21 @@ void MainWindow::readyRead()
             break;
         }
 
+        case 14: // Mensaje del chat
+        {
+            QString str;
+            in >> str;
+
+            ui->chatBox->appendPlainText(str);
+            break;
+        }
+
         }
 
         if(in.atEnd())
             endReached = true;
     }
+
 }
 
 void MainWindow::initializeNewGame(){
@@ -304,6 +486,15 @@ void MainWindow::initializeNewGame(){
     string buffer = "";
 
     for(int i=0; i<4; i++){
+        if(!players[i].inTheMatch){
+            playersIcons[i]->setVisible(false);
+            playersInfo[i]->setVisible(false);
+            playersCards[i][0]->setVisible(false);
+            playersCards[i][1]->setVisible(false);
+            bets[i]->setVisible(false);
+            chipsIcons[i]->setVisible(false);
+        }
+
         players[i].isOut = false;
         players[i].bet = 0;
         bets[i]->setText(QString::fromStdString(to_string(players[i].bet)+"$"));
@@ -319,6 +510,9 @@ void MainWindow::initializeNewGame(){
 
     for(int i=0; i<5; i++)
         commCardIcons[i]->setPixmap(redCard);
+
+    ui->waitingLbl->hide();
+    ui->loadingAnimation->hide();
 
     ui->totalPot->setText(QString::number(pot)+"$");
 
@@ -341,12 +535,8 @@ void MainWindow::initializeNewGame(){
 
     state = 3;
 
-    for(PlayerMin p : players)
-        if(p.inTheMatch)
-            cout << p;
-
-    ////        while(m.gameLoop());
-    ////        close();
+    QApplication::processEvents();
+    emit readyRead();
 }
 
 void MainWindow::closeGame(){
@@ -371,23 +561,24 @@ void MainWindow::displayError(QAbstractSocket::SocketError socketError)
     case QAbstractSocket::RemoteHostClosedError:
         break;
     case QAbstractSocket::HostNotFoundError:
-        QMessageBox::information(this, tr("Poker online"),
-                                 tr("Host no encontrado. Por favor, verifica que la dirección "
-                                    "IP y el puerto sean correctos"));
+        QMessageBox::information(lobby, tr("Poker online"),
+                                 tr("The host was not found. Please check the "
+                                    "host name and port settings."));
         break;
     case QAbstractSocket::ConnectionRefusedError:
-        QMessageBox::information(this, tr("Poker online"),
-                                 tr("La conexión fue rechazada por el host. "
-                                    "La aplicación del servidor no esta activa "
-                                    "en este momento."));
+        QMessageBox::information(lobby, tr("Poker online"),
+                                 tr("The connection was refused by the server. "
+                                    "Make sure the server app is running, "
+                                    "and check that the host IP and port "
+                                    "settings are correct."));
         break;
     default:
-        QMessageBox::information(this, tr("Poker online"),
-                                 tr("Ocurrio el siguiente error: %1.")
+        QMessageBox::information(lobby, tr("Poker online"),
+                                 tr("The following error occurred: %1.")
                                  .arg(socket->errorString()));
     }
 
-    // Behaviour in case of error
+    lobby->reInitialize();
 }
 
 bool MainWindow::gameLoop(){
@@ -559,10 +750,6 @@ bool MainWindow::betRound(){
 
 void MainWindow::playTurn()
 {
-    // TEST BLOCK
-//    lastBet = 620;
-    // -------------
-
     playersInfo[myNum-1]->setEnabled(true);
     ui->checkBtn->setEnabled(true);
     ui->foldBtn->setEnabled(true);
@@ -621,7 +808,7 @@ void MainWindow::updateGameState(){
     }
 }
 
-void MainWindow::showdown(string buffer){
+void MainWindow::showdown(){
 //(NumJugador, Carta1, Carta2, Mano) x (numJugadores), NumJGanador, Cantidad;
     int nJugadores = 4;
 
@@ -788,4 +975,24 @@ void MainWindow::on_allinBtn_clicked()
 MainWindow::~MainWindow()
 {
     delete ui;
+}
+
+
+void MainWindow::on_sendMsgBtn_clicked()
+{
+    if(ui->chatLineEdit->text().isEmpty())
+        return;
+
+    QByteArray block;
+    QDataStream out(&block, QIODevice::WriteOnly);
+    out.setVersion(QDataStream::Qt_4_0);
+
+    QString msg = ui->chatLineEdit->text();
+    out << (qint8)14;
+    out << msg;
+
+    socket->write(block);
+    socket->flush();
+
+    ui->chatLineEdit->setText("");
 }

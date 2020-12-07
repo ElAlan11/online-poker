@@ -16,6 +16,8 @@
 #include <QTcpSocket>
 #include <QAbstractSocket>
 #include <QDataStream>
+#include <QNetworkConfiguration>
+#include <QNetworkConfigurationManager>
 
 using namespace std;
 
@@ -33,9 +35,9 @@ public:
 
     void initializeUI();
     void defaultButtons();
-    bool joinMatch(string nickname);
+    void joinMatch(string nickname, QString ip, QString port);
     void updateGameState();
-    void showdown(string buffer);
+    void showdown();
     bool gameLoop();
     void playTurn();
     bool betRound();
@@ -47,6 +49,7 @@ private slots:
     void on_checkBtn_clicked();
     void on_raiseBtn_clicked();
     void on_allinBtn_clicked();
+    void on_sendMsgBtn_clicked();
 
 public slots:
     void connected();
@@ -63,8 +66,8 @@ signals:
 private:
     Ui::MainWindow *ui;
     Lobby *lobby;
-
     QTcpSocket *socket;
+
     QLabel* playersInfo[4];
     QLabel* playersIcons[4];
     QLabel* playersCards[4][2];

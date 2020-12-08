@@ -60,7 +60,7 @@ void MainWindow::joinMatch(string nickname, QString ip, QString port){
     connect(socket, &QTcpSocket::connected, this, &MainWindow::connected);
     connect(socket, &QTcpSocket::disconnected, this, &MainWindow::disconnected);
     connect(socket, &QTcpSocket::readyRead, this, &MainWindow::readyRead);
-    connect(socket, &QTcpSocket::errorOccurred, this, &MainWindow::displayError);
+    connect(socket, &QAbstractSocket::errorOccurred, this, &MainWindow::displayError);
     connect(this, &MainWindow::matchStarted, this, &MainWindow::initializeNewGame);
 
     cout << "Connecting..." << endl;
